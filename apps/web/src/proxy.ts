@@ -1,6 +1,5 @@
 import { geolocation, ipAddress } from '@vercel/functions'
-import type { NextRequest } from 'next/server'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import createIntlMiddleware from 'next-intl/middleware'
 
 import {
@@ -17,7 +16,6 @@ import { routing } from './i18n/routing'
 const intlMiddleware = createIntlMiddleware(routing)
 
 const NEXT_INTL_LOCALE_HEADER = 'X-NEXT-INTL-LOCALE'
-const MIDDLEWARE_OVERRIDE_HEADERS = 'x-middleware-override-headers'
 
 // Check if a string looks like a locale code (2-3 lowercase letters)
 const localePattern = /^[a-z]{2,3}$/
@@ -60,48 +58,6 @@ function getLocaleFromRequest(req: NextRequest, pathname: string): string {
     })() ||
     defaultLocale
   )
-}
-
-function getLocaleFromIntlResponseHeaders(
-  headers: Headers,
-): string | undefined {
-  // next-intl serializes request header overrides as
-  // `x-middleware-request-*` response headers.
-  return (
-    normalizeLocale(
-      headers.get(
-        `x-middleware-request-${NEXT_INTL_LOCALE_HEADER.toLowerCase()}`,
-      ),
-    ) ||
-    normalizeLocale(
-      headers.get(`x-middleware-request-${NEXT_INTL_LOCALE_HEADER}`),
-    ) ||
-    undefined
-  )
-}
-
-function appendRequestHeaderOverrides(
-  response: NextResponse,
-  headers: Headers,
-): NextResponse {
-  const overriddenHeaders = new Set(
-    (response.headers.get(MIDDLEWARE_OVERRIDE_HEADERS) || '')
-      .split(',')
-      .map((key) => key.trim().toLowerCase())
-      .filter(Boolean),
-  )
-
-  headers.forEach((value, key) => {
-    const normalizedKey = key.toLowerCase()
-    response.headers.set(`x-middleware-request-${normalizedKey}`, value)
-    overriddenHeaders.add(normalizedKey)
-  })
-
-  response.headers.set(
-    MIDDLEWARE_OVERRIDE_HEADERS,
-    [...overriddenHeaders].join(','),
-  )
-  return response
 }
 
 const shouldSkipIntl = (pathname: string) => {
@@ -170,30 +126,14 @@ export async function proxy(req: NextRequest) {
       return NextResponse.redirect(clonedUrl)
     }
 
-    const intlResponse = intlMiddleware(req)
+    const resolvedLocale = getLocaleFromRequest(req, pathname)
+    requestHeaders.set(REQUEST_LOCALE, resolvedLocale)
 
-    // Preserve next-intl's original rewrite/redirect response. Reconstructing it
-    // loses internal middleware state and creates a `/` <-> `/zh` redirect loop.
-    if (
-      intlResponse.status === 307 ||
-      intlResponse.status === 308 ||
-      intlResponse.headers.get('location')
-    ) {
-      return intlResponse
-    }
-
-    const resolvedLocale =
-      getLocaleFromIntlResponseHeaders(intlResponse.headers) ||
-      getLocaleFromRequest(req, pathname)
-    const customHeaders = new Headers()
-    customHeaders.set(REQUEST_PATHNAME, pathname)
-    customHeaders.set(REQUEST_QUERY, search)
-    customHeaders.set(REQUEST_GEO, geo?.country || 'unknown')
-    customHeaders.set(REQUEST_IP, ip || '')
-    customHeaders.set(REQUEST_HOST, headers.get('host') || '')
-    customHeaders.set(REQUEST_LOCALE, resolvedLocale)
-
-    return appendRequestHeaderOverrides(intlResponse, customHeaders)
+    // Let next-intl create and return its own rewrite/redirect response. Rebuilding
+    // that response loses internal middleware metadata and can make the default
+    // locale bounce between `/` and `/zh`.
+    const intlRequest = new NextRequest(req, { headers: requestHeaders })
+    return intlMiddleware(intlRequest)
   }
 
   // Routes that skip next-intl still benefit from having a stable locale header.

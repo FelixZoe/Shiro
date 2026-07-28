@@ -17,6 +17,7 @@ import { routing } from './i18n/routing'
 const intlMiddleware = createIntlMiddleware(routing)
 
 const NEXT_INTL_LOCALE_HEADER = 'X-NEXT-INTL-LOCALE'
+const MIDDLEWARE_OVERRIDE_HEADERS = 'x-middleware-override-headers'
 
 // Check if a string looks like a locale code (2-3 lowercase letters)
 const localePattern = /^[a-z]{2,3}$/
@@ -77,6 +78,30 @@ function getLocaleFromIntlResponseHeaders(
     ) ||
     undefined
   )
+}
+
+function appendRequestHeaderOverrides(
+  response: NextResponse,
+  headers: Headers,
+): NextResponse {
+  const overriddenHeaders = new Set(
+    (response.headers.get(MIDDLEWARE_OVERRIDE_HEADERS) || '')
+      .split(',')
+      .map((key) => key.trim().toLowerCase())
+      .filter(Boolean),
+  )
+
+  headers.forEach((value, key) => {
+    const normalizedKey = key.toLowerCase()
+    response.headers.set(`x-middleware-request-${normalizedKey}`, value)
+    overriddenHeaders.add(normalizedKey)
+  })
+
+  response.headers.set(
+    MIDDLEWARE_OVERRIDE_HEADERS,
+    [...overriddenHeaders].join(','),
+  )
+  return response
 }
 
 const shouldSkipIntl = (pathname: string) => {
@@ -146,17 +171,9 @@ export async function proxy(req: NextRequest) {
     }
 
     const intlResponse = intlMiddleware(req)
-    const resolvedLocale =
-      getLocaleFromIntlResponseHeaders(intlResponse.headers) ||
-      getLocaleFromRequest(req, pathname)
 
-    // Do not copy `x-middleware-rewrite`, `location` or other middleware
-    // response headers into the request. Doing that makes the internally
-    // rewritten default-locale route redirect back to `/` forever.
-    requestHeaders.set(REQUEST_LOCALE, resolvedLocale)
-    requestHeaders.set(NEXT_INTL_LOCALE_HEADER, resolvedLocale)
-
-    // Handle redirects
+    // Preserve next-intl's original rewrite/redirect response. Reconstructing it
+    // loses internal middleware state and creates a `/` <-> `/zh` redirect loop.
     if (
       intlResponse.status === 307 ||
       intlResponse.status === 308 ||
@@ -165,22 +182,18 @@ export async function proxy(req: NextRequest) {
       return intlResponse
     }
 
-    // Handle rewrites (for as-needed mode with default locale)
-    const rewriteHeader = intlResponse.headers.get('x-middleware-rewrite')
-    if (rewriteHeader) {
-      const rewriteUrl = new URL(rewriteHeader)
-      return NextResponse.rewrite(rewriteUrl, {
-        request: {
-          headers: requestHeaders,
-        },
-      })
-    }
+    const resolvedLocale =
+      getLocaleFromIntlResponseHeaders(intlResponse.headers) ||
+      getLocaleFromRequest(req, pathname)
+    const customHeaders = new Headers()
+    customHeaders.set(REQUEST_PATHNAME, pathname)
+    customHeaders.set(REQUEST_QUERY, search)
+    customHeaders.set(REQUEST_GEO, geo?.country || 'unknown')
+    customHeaders.set(REQUEST_IP, ip || '')
+    customHeaders.set(REQUEST_HOST, headers.get('host') || '')
+    customHeaders.set(REQUEST_LOCALE, resolvedLocale)
 
-    return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
-    })
+    return appendRequestHeaderOverrides(intlResponse, customHeaders)
   }
 
   // Routes that skip next-intl still benefit from having a stable locale header.

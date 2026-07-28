@@ -23,22 +23,21 @@ export const fetchAggregationData = async () => {
       }),
     ])
 
-    const data = (aggregateResponse.$serialized ?? aggregateResponse) as
-      | (AggregateRoot & { theme?: AppThemeConfig })
-      | undefined
+    const data = (aggregateResponse.$serialized ??
+      aggregateResponse) as AggregateRoot & { theme?: AppThemeConfig }
     const pages = pageResponse?.data ?? []
 
     return {
       ...data,
       // Core 11+ removed pageMeta from /aggregate; rebuild the small
       // navigation projection from the canonical page list endpoint.
-      pageMeta: pages.map((page: any) => ({
+      pageMeta: pages.map((page) => ({
         id: page.id,
         title: page.title,
         slug: page.slug,
         subtitle: page.subtitle,
       })),
-      theme: data?.theme
+      theme: data.theme
         ? deepMerge(defaultThemeConfig, data.theme)
         : defaultThemeConfig,
     }

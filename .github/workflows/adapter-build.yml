@@ -15,7 +15,9 @@ jobs:
   check:
     runs-on: ubuntu-latest
     env:
-      VALIDATION_PASS: '3'
+      VALIDATION_PASS: '4'
+      CI: 'true'
+      NEXT_TELEMETRY_DISABLED: '1'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,8 +40,8 @@ jobs:
         run: |
           set +e
           mkdir -p .github/adapter-build
-          pnpm --filter @shiro/web exec tsc --noEmit > .github/adapter-build/typecheck.log 2>&1
-          status=$?
+          pnpm --filter @shiro/web exec tsc --noEmit 2>&1 | tee .github/adapter-build/typecheck.log
+          status=${PIPESTATUS[0]}
           printf '%s\n' "$status" > .github/adapter-build/typecheck.status
           exit 0
 
@@ -47,8 +49,8 @@ jobs:
         shell: bash
         run: |
           set +e
-          pnpm --filter @shiro/web build > .github/adapter-build/build.log 2>&1
-          status=$?
+          pnpm --filter @shiro/web run build:ci 2>&1 | tee .github/adapter-build/build.log
+          status=${PIPESTATUS[0]}
           printf '%s\n' "$status" > .github/adapter-build/build.status
           exit 0
 

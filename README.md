@@ -1,170 +1,190 @@
 # Shiro
 
+一个为 Mix Space 生态设计的极简个人网站前端。
+
 > [!IMPORTANT]
-> **Shiro 已进入维护模式，将停留在当前版本，不再添加新功能，仅修复关键 Bug。**
->
-> 如果你正在寻找一个全新的个人博客前端，请关注 **[余白 / Yohaku](https://github.com/Innei/Yohaku)** — 一个独立的新项目，拥有全新的设计语言与视觉体系。完整代码需 [赞助](https://github.com/sponsors/Innei) 获取访问权限。
->
-> **Shiro 要求 Mix Space Core 版本 == 10.x**，不兼容更高版本。
+> 本分支已经适配当前 Mix Space Core：使用 `/api/v3`、PostgreSQL 16、Redis、独立迁移容器和新版 API Client。它不再按旧 Core 10 / MongoDB 部署方式运行。
 
-一个极简主义的个人网站主题，如纸的纯净，似雪的清新。
+## 技术栈
 
-专为 [Mix Space](https://github.com/mx-space) 生态系统设计的现代化个人站点前端。
+- Next.js 16（App Router）
+- React 19
+- Tailwind CSS v4 / DaisyUI v5
+- TanStack Query
+- Jotai
+- Socket.IO
+- Mix Space API Client 5.6 运行时兼容层
 
-## :sparkles: 示例站点
+## 当前部署架构
 
-以下是一些使用 Shiro 主题的精美站点：
-
-- [静かな森](https://innei.in)
-- [可愛い松](https://blog.wibus.ren/)
-
-
-欢迎体验 Shiro 带来的极简之美！
-
-## :rocket: 核心特性
-
-- **:zap: 极致性能**：在 LightHouse 测试中表现卓越，Performance 和 Best Practice 均超过 90%
-- **:art: 现代设计**：简洁而不简单的用户界面，提供流畅优雅的用户体验
-- **:gem: 细节至上**：采用符合物理学的 Spring 弹性动画，每一帧都如自然般舒适
-- **:bell: 实时通知**：通过 WebSocket 连接，访客可实时接收最新文章推送
-- **:computer: 活动状态**：结合 [ProcessReporter](https://github.com/Innei/ProcessReporter)，在主页展示实时活动状态
-- **:pencil: 扩展语法**：支持丰富的 Markdown 扩展语法，满足多样化写作需求
-- **:house: 精美首页**：Hero 区域、活动流、时间线展示、风向标导航
-- **:bulb: 思考系统**：独立的思考（Recently）页面，支持评论、点赞、RSS Feed
-- **:clock3: 时间线**：按年份、类型筛选的文章/手记时间线
-- **:globe_with_meridians: 多语言**：基于 next-intl 的国际化支持
-
-## :gear: 技术架构
-
-基于现代化的前端技术栈构建：
-
-- **NextJS 16** (App Router) - React 全栈框架
-- **Jotai** - 原子化状态管理
-- **Motion** - 流畅动画库
-- **Radix UI** - 无障碍组件库
-- **Socket.IO** - 实时通信
-- **TailwindCSS v4** - 原子化 CSS 框架
-- **DaisyUI v5** - 组件库
-- **TanStack Query** - 服务端状态管理
-
-## 📖 部署指南
-
-详细的部署教程请参考：https://mx-space.js.org/docs/themes/shiro/deploy
-
-感谢 @wibus-wee、@wuhang2003 等社区贡献者编写的详细文档。
-
-## :camera: 界面预览
-
-<img width="1471" alt="Live Demo" src="https://github.com/Innei/Shiro/assets/41265413/bf8af4ec-0f0c-441a-8c06-4b44e1649597">
-
-<details>
-<summary>
-点击查看更多完整页面截图
-</summary>
-
-![页面截图 1](https://github.com/Innei/Shiro/assets/41265413/1b85c9be-0cd3-46b5-a089-a9ab97fdfecb)
-![页面截图 2](https://github.com/Innei/Shiro/assets/41265413/d808d288-c022-42f2-8d74-ad057a588771)
-
-</details>
-
-## :zap: 性能测试
-
-在 M2 MacBook Air 环境下对重负载页面的性能测试结果：
-
-![性能测试结果](https://github.com/Innei/Shiro/assets/41265413/f76152af-4a52-46a2-9b83-20567800ba75)
-
-## :whale: 快速开始
-
-### :package: 预构建版本
-
-从 [Releases](https://github.com/Innei/Shiro/releases) 页面下载最新的 `release.zip` 压缩包并解压：
-
-```bash
-cd standalone
-vim .env # 配置环境变量
-export PORT=2323
-node server.js
+```text
+Browser
+  ├─ Shiro :2323
+  └─ Core API / Socket.IO :2333
+          ├─ PostgreSQL 16
+          ├─ Redis 7
+          ├─ /root/.mx-space 持久化目录
+          └─ mx-migrate 一次性迁移任务
 ```
 
-### :docker: Docker Compose（推荐）
+Shiro 本身不直接访问数据库。PostgreSQL、Redis 和数据库迁移属于 Core 服务；Shiro 只通过 Core `/api/v3` 获取数据。
+
+## Docker Compose（推荐）
+
+### 1. 准备配置
 
 ```bash
-mkdir shiro && cd shiro
-wget https://raw.githubusercontent.com/Innei/Shiro/main/docker-compose.yml
-wget https://raw.githubusercontent.com/Innei/Shiro/main/.env.template .env
+git clone https://github.com/FelixZoe/Shiro.git
+cd Shiro
+cp .env.example .env
+```
 
-vim .env # 配置环境变量
-mkdir public # 放置自定义 Favicon
+生成安全密钥：
+
+```bash
+openssl rand -base64 48
+openssl rand -hex 32
+```
+
+把输出分别填入 `.env`：
+
+```env
+JWT_SECRET=第一条命令的输出
+ENCRYPT_KEY=第二条命令的输出
+POSTGRES_PASSWORD=强数据库密码
+```
+
+本地运行可保留：
+
+```env
+PUBLIC_CORE_ORIGIN=http://localhost:2333
+PUBLIC_CORE_API_URL=http://localhost:2333/api/v3
+ALLOWED_ORIGINS=localhost,127.0.0.1
+```
+
+生产环境应改为浏览器可以访问的 HTTPS 地址，例如：
+
+```env
+PUBLIC_CORE_ORIGIN=https://api.example.com
+PUBLIC_CORE_API_URL=https://api.example.com/api/v3
+ALLOWED_ORIGINS=example.com,www.example.com
+```
+
+`PUBLIC_CORE_*` 不能填写 `http://core:2333`。`core` 只是 Docker 内部服务名，访客浏览器无法解析它。Compose 已自动给服务端渲染配置内部地址 `http://core:2333/api/v3`。
+
+### 2. 启动
+
+```bash
+docker compose up -d --build
+```
+
+查看状态：
+
+```bash
+docker compose ps
+docker compose logs mx-migrate
+docker compose logs -f core shiro
+```
+
+正常启动顺序是：
+
+1. PostgreSQL 与 Redis 健康检查通过。
+2. `mx-migrate` 执行 Drizzle schema migration 和 Core 应用数据迁移，然后以状态码 0 退出。
+3. Core 启动并通过 `/api/v3/ping` 健康检查。
+4. Shiro 启动。
+
+`mx-migrate` 显示 `Exited (0)` 是正常状态，不是服务崩溃。
+
+### 3. 数据目录
+
+```text
+data/postgres   PostgreSQL 数据
+data/redis      Redis AOF 数据
+data/mx-space   Core 上传文件、备份及运行数据
+```
+
+升级或迁移服务器前，至少备份 `data/postgres` 和 `data/mx-space`。更稳妥的 PostgreSQL 备份方式：
+
+```bash
+docker compose exec -T postgres \
+  pg_dump -U mx -d mx_core -Fc > mx_core.dump
+```
+
+### 4. 更新
+
+```bash
+git pull
+docker compose pull core mx-migrate postgres redis
+docker compose build --pull shiro
 docker compose up -d
-
-# 后续更新
-docker compose pull
 ```
 
-## :memo: Markdown 扩展
+每次 Core 镜像升级后都让 `mx-migrate` 正常执行，不要直接跳过迁移容器启动 Core。
 
-了解更多 Markdown 扩展语法，请访问：https://shiro.innei.in/#/markdown
+## 从旧 MongoDB 部署迁移
 
-## :star: 余白 / Yohaku
+> [!WARNING]
+> 新 Compose 不会自动把旧 MongoDB 数据变成 PostgreSQL 数据。不要把旧 MongoDB volume 挂到 PostgreSQL 容器，也不要删除旧数据后直接尝试启动。
 
-**[余白 / Yohaku](https://github.com/Innei/Yohaku)** 是一个全新的个人博客项目，拥有独立的设计语言与视觉体系。如果你希望获得持续更新的体验，推荐关注 Yohaku。
+迁移前应：
 
-[![Sponsor](https://img.shields.io/badge/Sponsor-Innei-ea4aaa?logo=github-sponsors&logoColor=white)](https://github.com/sponsors/Innei)
+1. 完整备份旧 MongoDB 数据和旧 `.mx-space` 文件目录。
+2. 按当前 Core 提供的迁移/导入流程转换业务数据。
+3. 在测试目录启动 PostgreSQL 版本并核对文章、页面、评论、用户和附件。
+4. 确认无误后再切换域名和生产流量。
 
-## :star: 白い (Shiroi) - 赞助版
+当前 Compose 中的 `migrate.mjs` 用于 PostgreSQL schema 与新版本应用数据升级，不等同于 MongoDB → PostgreSQL 的跨数据库转换。
 
-[白い](https://github.com/innei-dev/Shiroi) 是 Shiro 的付费赞助版本，包含更多高级功能：
+## 只部署 Shiro
 
-### :robot: AI 智能功能
+Core 已经独立部署时，可以只构建 Shiro：
 
-- AI 智能摘要生成
-- AI 内容翻译系统（支持实时翻译推送）
-- AI 生成标记系统（支持标记翻译、摘要、自动生成等内容来源）
+```bash
+docker build -t shiro:local .
 
-### :sparkles: 高级视觉效果
+docker run -d \
+  --name shiro \
+  -p 2323:2323 \
+  -e NEXT_PUBLIC_API_URL=https://api.example.com/api/v3 \
+  -e NEXT_PUBLIC_CLIENT_API_URL=https://api.example.com/api/v3 \
+  -e NEXT_PUBLIC_GATEWAY_URL=https://api.example.com \
+  shiro:local
+```
 
-- WebGPU 雪花背景效果（高级粒子物理系统）
-- 萤火虫粒子效果
-- 纹理背景系统
-- 页面渐变色背景
-- 噪声背景生成
+三个地址的作用：
 
-### :busts_in_silhouette: 实时协作
+- `NEXT_PUBLIC_API_URL`：服务端渲染访问 Core 的地址。
+- `NEXT_PUBLIC_CLIENT_API_URL`：浏览器访问 Core API 的公开地址。
+- `NEXT_PUBLIC_GATEWAY_URL`：Socket.IO 网关公开地址，不带 `/api/v3`。
 
-- Socket.IO 房间管理
-- 在线用户实时展示（Presence 组件）
-- 访客信息追踪
+## Vercel 部署
 
-### :lock: 认证系统
+Shiro 部署到 Vercel、Core 部署到服务器时，在 Vercel 项目中设置：
 
-- Passkey 无密码认证支持
-- Passkey 管理页面（创建、列表）
+```env
+NEXT_PUBLIC_API_URL=https://api.example.com/api/v3
+NEXT_PUBLIC_CLIENT_API_URL=https://api.example.com/api/v3
+NEXT_PUBLIC_GATEWAY_URL=https://api.example.com
+```
 
-### :speech_balloon: 评论系统增强
+PostgreSQL、Redis、`PG_*` 和 `JWT_SECRET` 属于 Core，不应配置到 Shiro 的 Vercel 项目中。
 
-- Lexical 富文本评论编辑器
-- 评论内联编辑功能
-- 评论操作按钮组（编辑/回复）
+## 本地开发
 
-### :bar_chart: 后台系统
+```bash
+corepack enable
+corepack prepare pnpm@10.27.0 --activate
+pnpm install --frozen-lockfile
+cp apps/web/.env.template apps/web/.env
+pnpm dev
+```
 
-- 完整的仪表盘界面
-- Lexical 富文本编辑器
-- 文章/笔记编辑器增强
-- 每日诗词展示（今日诗词 API）
+默认端口：
 
-### :chart_with_upwards_trend: 分析集成
+- Shiro：`2323`
+- Core：`2333`
+- Core API：`http://localhost:2333/api/v3`
 
-- OpenPanel 用户行为分析
-- 屏幕视图追踪
-- 外链点击追踪
+## 许可
 
-## :heart: 致谢与许可
-
-**© 2026 Innei** - 本项目采用 AGPLv3 许可证，并附加特定的商业使用条件。
-
-使用本项目需要遵循 [附加条款和条件](ADDITIONAL_TERMS.md)。
-
----
-
-> [个人网站](https://innei.in/) · GitHub [@Innei](https://github.com/innei/)
+项目采用 AGPLv3，并附加仓库中的 [ADDITIONAL_TERMS.md](./ADDITIONAL_TERMS.md)。

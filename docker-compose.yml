@@ -82,8 +82,8 @@ services:
       retries: 5
       start_period: 30s
 
-  # Release-phase migration runner: Drizzle schema migrations first, followed
-  # by Core's application-data migrations. It exits after a successful upgrade.
+  # Release-phase migration runner for an existing PostgreSQL installation:
+  # Drizzle schema migrations first, followed by Core app-data migrations.
   mx-migrate:
     container_name: mx-migrate
     image: innei/mx-server:latest
@@ -96,6 +96,37 @@ services:
       postgres:
         condition: service_healthy
       redis:
+        condition: service_healthy
+    networks:
+      - mx-space
+    restart: "no"
+
+  # Optional one-time v11 MongoDB -> PostgreSQL hard-cutover helper. It is not
+  # started by normal `docker compose up`; explicitly enable the profile and run
+  # dry-run before apply. The CLI only reads MongoDB and is safe to rerun.
+  mongo-to-postgres:
+    profiles: ["mongo-migration"]
+    image: node:22-alpine
+    working_dir: /migration
+    environment:
+      MONGO_URI: ${MONGO_URI:-}
+      PG_HOST: postgres
+      PG_PORT: "5432"
+      PG_USER: ${POSTGRES_USER:-mx}
+      PG_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      PG_DATABASE: ${POSTGRES_DB:-mx_core}
+      SNOWFLAKE_WORKER_ID: ${MIGRATION_SNOWFLAKE_WORKER_ID:-900}
+      MIGRATION_MODE: ${MIGRATION_MODE:-dry-run}
+    command:
+      - sh
+      - -lc
+      - >-
+        test -n "$$MONGO_URI" || { echo 'MONGO_URI is required'; exit 2; };
+        npx -y @mx-space/mongo-pg-cli@latest --mode "$$MIGRATION_MODE"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      postgres:
         condition: service_healthy
     networks:
       - mx-space

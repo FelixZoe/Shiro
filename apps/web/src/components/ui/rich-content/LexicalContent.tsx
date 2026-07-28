@@ -23,6 +23,7 @@ import { useCallback, useMemo } from 'react'
 
 import { getWebUrl } from '~/atoms'
 import { useModalStack } from '~/components/ui/modal/stacked/provider'
+import { API_URL } from '~/constants/env'
 import { useIsDark } from '~/hooks/common/use-is-dark'
 import { fetchGitHubApi } from '~/lib/github'
 
@@ -84,7 +85,9 @@ const linkCardFetchContext: LinkCardFetchContext = {
     },
     'mx-space': {
       request: async (path) => {
-        const r = await fetch(`/api/v2/${path}`)
+        const apiBase = API_URL.replace(/\/$/, '')
+        const normalizedPath = path.replace(/^\/+/, '')
+        const r = await fetch(`${apiBase}/${normalizedPath}`)
         return await r.json()
       },
     },
@@ -115,73 +118,46 @@ export function LexicalContent({
   variant,
   className,
 }: LexicalContentProps) {
-  const editorState = useMemo<SerializedEditorState | null>(() => {
-    try {
-      return JSON.parse(content)
-    } catch {
-      return null
-    }
-  }, [content])
-
   const isDark = useIsDark()
   const { present } = useModalStack()
-  const presentDialog: PresentDialogFn = useCallback(
-    (props) =>
+  const presentDialog = useCallback<PresentDialogFn>(
+    (content, options) => {
       present({
-        title: props.title || ' ',
-        content: props.content,
-        clickOutsideToDismiss: props.clickOutsideToDismiss,
-        modalClassName: props.className,
-      }),
+        content,
+        title: options?.title,
+        clickOutsideToDismiss: true,
+      })
+    },
     [present],
   )
-
-  const baseVarStyle = useMemo(
-    () =>
-      ({
-        '--font-sans': fallbackSansFont,
-        '--font-serif': fallbackSerifFont,
-        '--font-mono': fallbackMonoFont,
-      }) as React.CSSProperties,
-    [],
+  const parsedContent = useMemo(
+    () => JSON.parse(content) as SerializedEditorState,
+    [content],
   )
 
-  const editorOverrideStyle = useMemo(
+  const themeStyle = useMemo(
     () =>
       createThemeStyle({
-        color: {
-          accent: 'var(--color-accent, #33a6b8)',
-          link: 'var(--color-accent, #33a6b8)',
-          accentLight:
-            'color-mix(in srgb, var(--color-accent, #33a6b8) 20%, transparent)',
-          quoteBorder: 'var(--color-accent, #33a6b8)',
-        },
-        layout: { maxWidth: '100%' },
-        typography: {
-          fontFamily:
-            variant === 'note'
-              ? `var(--note-font-override, ${fallbackSerifFont})`
-              : fallbackSansFont,
-          fontFamilySerif: fallbackSerifFont,
-          fontMono: fallbackMonoFont,
+        fonts: {
+          sans: fallbackSansFont,
+          serif: fallbackSerifFont,
+          mono: fallbackMonoFont,
         },
       }),
-    [variant],
+    [],
   )
-
-  if (!editorState) return null
 
   return (
     <PresentDialogProvider value={presentDialog}>
       <LinkCardFetchProvider value={linkCardFetchContext}>
-        <ShiroRenderer
-          className={clsx(className, 'bg-transparent!')}
-          rendererConfig={customRendererConfig}
-          style={{ ...baseVarStyle, ...editorOverrideStyle }}
-          theme={isDark ? 'dark' : 'light'}
-          value={editorState}
-          variant={variant}
-        />
+        <div className={clsx(className, themeStyle.className)}>
+          <ShiroRenderer
+            editorState={parsedContent}
+            variant={variant}
+            theme={isDark ? 'dark' : 'light'}
+            config={customRendererConfig}
+          />
+        </div>
       </LinkCardFetchProvider>
     </PresentDialogProvider>
   )

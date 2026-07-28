@@ -1,0 +1,49 @@
+name: Export Compose CLI for sandbox
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/export-compose-cli-for-sandbox.yml
+
+permissions:
+  contents: write
+
+env:
+  META_PATH: .github/compose-cli-export
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Record run metadata
+        run: |
+          set -euo pipefail
+          mkdir -p "$META_PATH"
+          printf '%s\n' "${{ github.run_id }}" > "$META_PATH/run-id.txt"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "$META_PATH"
+          git commit -m 'chore: record compose cli export run'
+          git push
+
+      - name: Package Docker and Compose CLI
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/docker-tools
+          cp "$(command -v docker)" /tmp/docker-tools/docker
+          compose_path=$(find /usr/local/lib/docker/cli-plugins /usr/libexec/docker/cli-plugins /usr/lib/docker/cli-plugins -type f -name docker-compose -perm -111 2>/dev/null | head -1)
+          test -n "$compose_path"
+          cp "$compose_path" /tmp/docker-tools/docker-compose
+          /tmp/docker-tools/docker --version
+          /tmp/docker-tools/docker-compose version
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: docker-compose-cli
+          path: /tmp/docker-tools
+          retention-days: 1

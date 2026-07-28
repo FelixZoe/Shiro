@@ -1,10 +1,17 @@
-import { RequestError } from '@mx-space/api-client'
+import { RequestError } from '@mx-space/api-client-v5'
 import type { FetchError } from 'ofetch'
 
 export const getErrorMessageFromRequestError = (error: RequestError) => {
   if (!(error instanceof RequestError)) return (error as Error).message
+
   const fetchError = error.raw as FetchError
-  const messagesOrMessage = fetchError.response?._data?.message
+  const payload = fetchError.response?._data as
+    | {
+        error?: { message?: string | string[] }
+        message?: string | string[]
+      }
+    | undefined
+  const messagesOrMessage = payload?.error?.message ?? payload?.message
   const bizMessage =
     typeof messagesOrMessage === 'string'
       ? messagesOrMessage
@@ -12,5 +19,5 @@ export const getErrorMessageFromRequestError = (error: RequestError) => {
         ? messagesOrMessage[0]
         : undefined
 
-  return bizMessage || fetchError.message
+  return bizMessage || error.message || fetchError.message
 }

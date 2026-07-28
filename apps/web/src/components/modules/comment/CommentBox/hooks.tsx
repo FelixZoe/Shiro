@@ -1,10 +1,7 @@
 'use client'
 
-import type {
-  CommentDto,
-  CommentModel,
-  RequestError,
-} from '@mx-space/api-client'
+import type { CommentDto, CommentModel } from '@mx-space/api-client'
+import type { RequestError } from '@mx-space/api-client-v5'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { ExtractAtomValue } from 'jotai'
 import { atom, useAtomValue } from 'jotai'
@@ -169,18 +166,16 @@ export const useSendComment = () => {
       // Reply Comment
       if (isReply) {
         if (isLogged) {
-          return apiClient.comment.proxy.owner
-            .reply(refId)
-            .post<CommentModel>({
-              data: {
-                text,
-                source,
-              },
-            })
+          return apiClient.comment
+            .readerReply(refId, {
+              text,
+              source,
+              ...(anchor ? { anchor } : {}),
+            } as any)
             .then(wrappedCompletedCallback)
         } else {
           return apiClient.comment
-            .reply(refId, commentDto)
+            .guestReply(refId, commentDto as any)
             .then(wrappedCompletedCallback)
         }
       }
@@ -190,11 +185,13 @@ export const useSendComment = () => {
       const syncToRecently = jotaiStore.get(syncToRecentlyAtom)
 
       if (isLogged) {
-        return apiClient.comment.proxy.owner
-          .comment(refId)
-          .post<CommentModel>({
-            data: { text, source, ...(anchor ? { anchor } : {}) },
-          })
+        return apiClient.comment
+          .readerComment(refId, {
+            text,
+            isWhispers: isWhisper,
+            source,
+            ...(anchor ? { anchor } : {}),
+          } as any)
           .then(async (res) => {
             if (syncToRecently)
               apiClient.recently.proxy
@@ -215,7 +212,7 @@ export const useSendComment = () => {
       // @ts-ignore
       commentDto.isWhispers = isWhisper
       return apiClient.comment
-        .comment(refId, commentDto)
+        .guestComment(refId, commentDto as any)
         .then(wrappedCompletedCallback)
     },
     mutationKey: [commentRefId, 'comment'],

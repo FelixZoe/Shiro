@@ -1,5 +1,6 @@
-import type { IRequestAdapter } from '@mx-space/api-client'
-import createClient, { allControllers } from '@mx-space/api-client'
+import type { IRequestAdapter } from '@mx-space/api-client-v5'
+import { allControllers } from '@mx-space/api-client-v5'
+import { createLegacyApiClient } from '@mx-space/api-client-v5/legacy'
 import type { $fetch } from 'ofetch'
 
 import { API_URL } from '~/constants/env'
@@ -10,51 +11,100 @@ export const createFetchAdapter = (
 ): IRequestAdapter<typeof $fetch> => ({
   default: $fetch,
   get(url: string, options) {
-    const { params } = options || {}
+    const { params, ...rest } = options || {}
     return $fetch(url, {
+      ...rest,
       method: 'GET',
       query: params,
     })
   },
   post(url: string, options) {
-    const { params, data } = options || {}
+    const { params, data, ...rest } = options || {}
     return $fetch(url, {
+      ...rest,
       method: 'post',
       query: params,
       body: data,
     })
   },
   put(url: string, options) {
-    const { params, data } = options || {}
+    const { params, data, ...rest } = options || {}
     return $fetch(url, {
+      ...rest,
       method: 'put',
       query: params,
       body: data,
     })
   },
   patch(url: string, options) {
-    const { params, data } = options || {}
+    const { params, data, ...rest } = options || {}
     return $fetch(url, {
+      ...rest,
       method: 'patch',
       query: params,
       body: data,
     })
   },
   delete(url: string, options) {
-    const { params, data } = options || {}
+    const { params, data, ...rest } = options || {}
     return $fetch(url, {
+      ...rest,
       method: 'delete',
       query: params,
       body: data,
     })
   },
 })
+
+const normalizeLegacyFields = (value: any): any => {
+  if (Array.isArray(value)) return value.map(normalizeLegacyFields)
+  if (!value || typeof value !== 'object') return value
+
+  const next = Object.fromEntries(
+    Object.entries(value).map(([key, item]) => [
+      key,
+      normalizeLegacyFields(item),
+    ]),
+  ) as Record<string, any>
+
+  if (next.created === undefined && next.createdAt !== undefined) {
+    next.created = next.createdAt
+  }
+  if (next.modified === undefined && next.modifiedAt !== undefined) {
+    next.modified = next.modifiedAt
+  }
+  if (
+    next.count === undefined &&
+    (next.readCount !== undefined || next.likeCount !== undefined)
+  ) {
+    next.count = {
+      read: next.readCount ?? 0,
+      like: next.likeCount ?? 0,
+    }
+  }
+  // Core 13 removed the per-document switch. Global comment settings
+  // remain authoritative, while legacy Shiro expects this flag.
+  if (
+    next.allowComment === undefined &&
+    typeof next.id === 'string' &&
+    (typeof next.text === 'string' || typeof next.content === 'string')
+  ) {
+    next.allowComment = true
+  }
+
+  return next
+}
+
+const shiroCompatibilityAdapter = {
+  transformData(data: any) {
+    return normalizeLegacyFields(data)
+  },
+}
+
 export const createApiClient = (
   fetchAdapter: ReturnType<typeof createFetchAdapter>,
 ) =>
-  createClient(fetchAdapter)(API_URL, {
+  createLegacyApiClient(fetchAdapter)(API_URL, {
     controllers: allControllers,
-    getDataFromResponse(response) {
-      return response as any
-    },
-  })
+    responseAdapter: shiroCompatibilityAdapter,
+  }) as any

@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { RequestError } from '@mx-space/api-client'
+import { RequestError } from '@mx-space/api-client-v5'
 import { notFound } from 'next/navigation'
 import type { ReactNode } from 'react'
 import { createElement } from 'react'

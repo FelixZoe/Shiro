@@ -20,6 +20,18 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Record run metadata immediately
+        run: |
+          set -euo pipefail
+          mkdir -p "$META_PATH"
+          printf '%s\n' "${{ github.run_id }}" > "$META_PATH/run-id.txt"
+          printf '%s\n' "${{ github.sha }}" > "$META_PATH/source-sha.txt"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add "$META_PATH"
+          git commit -m 'chore: record sandbox dependency export run'
+          git push
+
       - uses: pnpm/action-setup@v4
         with:
           version: 10.27.0
@@ -35,9 +47,6 @@ jobs:
       - name: Package installed dependency trees
         run: |
           set -euo pipefail
-          mkdir -p "$META_PATH"
-          printf '%s\n' "${{ github.run_id }}" > "$META_PATH/run-id.txt"
-          printf '%s\n' "${{ github.sha }}" > "$META_PATH/source-sha.txt"
           find . -type d -name node_modules -prune -print0 | \
             tar --null -T - -czf /tmp/shiro-node-modules.tar.gz
           du -h /tmp/shiro-node-modules.tar.gz
@@ -48,12 +57,3 @@ jobs:
           path: /tmp/shiro-node-modules.tar.gz
           compression-level: 0
           retention-days: 1
-
-      - name: Record dependency export metadata
-        run: |
-          set -euo pipefail
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add "$META_PATH"
-          git commit -m 'chore: record sandbox dependency export'
-          git push

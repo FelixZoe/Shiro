@@ -14,7 +14,7 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     env:
-      VALIDATION_PASS: "2"
+      VALIDATION_PASS: "3"
       CI: "true"
       NEXT_TELEMETRY_DISABLED: "1"
     steps:
@@ -31,7 +31,7 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      - name: Scan legacy references
+      - name: Scan legacy references and API calls
         shell: bash
         run: |
           set -euo pipefail
@@ -43,6 +43,11 @@ jobs:
             --exclude-dir=architecture-audit \
             '(/api/v2|MONGO_|mongodb://|node:20|node:lts)' \
             . > .github/architecture-audit/legacy-hits.txt || true
+
+          grep -RInE \
+            --include='*.ts' --include='*.tsx' \
+            '(apiClient\.|apiClient\(|\.proxy\.|\.proxy\(|API_URL|GATEWAY_URL)' \
+            apps/web/src > .github/architecture-audit/api-calls.txt || true
 
       - name: Validate Compose configuration
         shell: bash
@@ -101,10 +106,11 @@ jobs:
           import json
           from pathlib import Path
           names = ['compose', 'dockerfile', 'typecheck', 'build']
-          result = {'validationPass': 2}
+          result = {'validationPass': 3}
           for name in names:
               result[name] = int(Path(f'.github/architecture-audit/{name}.status').read_text().strip())
           result['legacyHitCount'] = len(Path('.github/architecture-audit/legacy-hits.txt').read_text().splitlines())
+          result['apiCallLineCount'] = len(Path('.github/architecture-audit/api-calls.txt').read_text().splitlines())
           Path('.github/architecture-audit/summary.json').write_text(json.dumps(result, indent=2) + '\n')
           PY
 
@@ -116,5 +122,5 @@ jobs:
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add .github/architecture-audit
           git diff --cached --quiet && exit 0
-          git commit -m 'chore: record Core v3 deployment validation'
+          git commit -m 'chore: record final Core v3 validation'
           git push

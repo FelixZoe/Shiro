@@ -1,4 +1,4 @@
-name: Core compatibility build
+name: Remove adaptation diagnostics
 
 on:
   push:
@@ -6,101 +6,31 @@ on:
       - main
     paths:
       - .github/workflows/adapter-build.yml
-  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  check:
+  cleanup:
     runs-on: ubuntu-latest
-    env:
-      VALIDATION_PASS: '7'
-      CI: 'true'
-      NEXT_TELEMETRY_DISABLED: '1'
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10.27.0
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Run TypeScript compatibility check
-        shell: bash
-        run: |
-          set +e
-          mkdir -p .github/adapter-build
-          pnpm --filter @shiro/web exec tsc --noEmit >/tmp/typecheck.raw 2>&1
-          status=$?
-          printf '%s\n' "$status" > .github/adapter-build/typecheck.status
-          python - <<'PY'
-          from pathlib import Path
-          raw = Path('/tmp/typecheck.raw').read_bytes()
-          Path('.github/adapter-build/typecheck.txt').write_text(raw.decode('utf-8', 'replace'))
-          PY
-          exit 0
-
-      - name: Run production build
-        shell: bash
-        run: |
-          set +e
-          mkdir -p .github/adapter-build
-          pnpm --filter @shiro/web run build:ci >/tmp/build.raw 2>&1
-          status=$?
-          bytes=$(wc -c </tmp/build.raw | tr -d ' ')
-          lines=$(wc -l </tmp/build.raw | tr -d ' ')
-          printf '%s\n' "$status" > .github/adapter-build/build.status
-          BUILD_STATUS="$status" BUILD_BYTES="$bytes" BUILD_LINES="$lines" python - <<'PY'
-          import json
-          import os
-          import re
-          from pathlib import Path
-
-          raw = Path('/tmp/build.raw').read_bytes()
-          text = raw.decode('utf-8', 'replace').replace('\x00', '')
-          text = re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]', '', text)
-          Path('.github/adapter-build/build.txt').write_text(
-              'VALIDATION_PASS=7\n'
-              f"NODE={os.popen('node --version').read().strip()}\n"
-              f"PNPM={os.popen('pnpm --version').read().strip()}\n"
-              f"BUILD_EXIT_STATUS={os.environ['BUILD_STATUS']}\n"
-              f"RAW_BYTES={os.environ['BUILD_BYTES']}\n"
-              f"RAW_LINES={os.environ['BUILD_LINES']}\n"
-              '--- OUTPUT ---\n'
-              + text
-          )
-          Path('.github/adapter-build/build-diagnostic.json').write_text(
-              json.dumps(
-                  {
-                      'validationPass': 7,
-                      'status': int(os.environ['BUILD_STATUS']),
-                      'rawBytes': int(os.environ['BUILD_BYTES']),
-                      'rawLines': int(os.environ['BUILD_LINES']),
-                  },
-                  indent=2,
-              ) + '\n'
-          )
-          PY
-          exit 0
-
-      - name: Commit reports
+      - name: Remove temporary adaptation files
         shell: bash
         run: |
           set -euo pipefail
+          rm -rf \
+            .github/adapter-build \
+            .github/adapter-inventory \
+            .github/workflows/adapter-inventory.yml \
+            .github/workflows/adapter-build.yml
+
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add .github/adapter-build
-          if ! git diff --cached --quiet; then
-            git commit -m 'chore: record Core compatibility check'
-            git push
-          fi
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -m 'chore: remove adaptation diagnostics'
+          git push

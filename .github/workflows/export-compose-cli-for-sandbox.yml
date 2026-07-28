@@ -33,11 +33,12 @@ jobs:
 
       - name: Package Docker and Compose CLI
         run: |
-          set -euo pipefail
+          set -eu
           mkdir -p /tmp/docker-tools
           cp "$(command -v docker)" /tmp/docker-tools/docker
-          compose_path=$(find /usr/local/lib/docker/cli-plugins /usr/libexec/docker/cli-plugins /usr/lib/docker/cli-plugins -type f -name docker-compose -perm -111 2>/dev/null | head -1)
+          compose_path=$(find /usr -type f -name docker-compose -perm -111 2>/dev/null | sed -n '1p')
           test -n "$compose_path"
+          echo "compose_path=$compose_path"
           cp "$compose_path" /tmp/docker-tools/docker-compose
           /tmp/docker-tools/docker --version
           /tmp/docker-tools/docker-compose version

@@ -1,71 +1,8 @@
-src/app/[locale]/(note-topic)/notes/(topic-detail)/series/[slug]/page.tsx(42,20): error TS2347: Untyped function calls may not accept type arguments.
-src/app/[locale]/(note-topic)/notes/(topic-detail)/series/[slug]/page.tsx(71,28): error TS7006: Parameter 'child' implicitly has an 'any' type.
-src/app/[locale]/(note-topic)/notes/(topic-detail)/series/[slug]/page.tsx(71,35): error TS7006: Parameter 'i' implicitly has an 'any' type.
-src/app/[locale]/(note-topic)/notes/series/page.tsx(21,22): error TS7006: Parameter 'item' implicitly has an 'any' type.
-src/app/[locale]/(note-topic)/notes/series/page.tsx(21,28): error TS7006: Parameter 'i' implicitly has an 'any' type.
-src/app/[locale]/friends/page.tsx(375,17): error TS7006: Parameter 'err' implicitly has an 'any' type.
-src/app/[locale]/layout.tsx(73,27): error TS18048: 'url' is possibly 'undefined'.
-src/app/[locale]/layout.tsx(75,25): error TS18048: 'seo' is possibly 'undefined'.
-src/app/[locale]/layout.tsx(76,19): error TS18048: 'seo' is possibly 'undefined'.
-src/app/[locale]/layout.tsx(76,34): error TS18048: 'seo' is possibly 'undefined'.
-src/app/[locale]/layout.tsx(78,18): error TS18048: 'seo' is possibly 'undefined'.
-src/app/[locale]/layout.tsx(79,15): error TS18048: 'seo' is possibly 'undefined'.
-src/app/[locale]/layout.tsx(113,18): error TS18048: 'seo' is possibly 'undefined'.
-src/app/[locale]/layout.tsx(114,27): error TS18048: 'seo' is possibly 'undefined'.
-src/app/[locale]/layout.tsx(116,20): error TS18048: 'seo' is possibly 'undefined'.
-src/app/[locale]/layout.tsx(117,20): error TS18048: 'seo' is possibly 'undefined'.
-src/app/[locale]/layout.tsx(120,12): error TS18048: 'url' is possibly 'undefined'.
-src/app/[locale]/layout.tsx(122,17): error TS18048: 'url' is possibly 'undefined'.
-src/app/[locale]/layout.tsx(123,19): error TS18048: 'user' is possibly 'undefined'.
-src/app/[locale]/layout.tsx(127,20): error TS18048: 'user' is possibly 'undefined'.
-src/app/[locale]/layout.tsx(127,47): error TS18048: 'user' is possibly 'undefined'.
-src/app/[locale]/layout.tsx(129,14): error TS18048: 'seo' is possibly 'undefined'.
-src/app/[locale]/layout.tsx(130,20): error TS18048: 'seo' is possibly 'undefined'.
-src/app/[locale]/layout.tsx(134,18): error TS18048: 'url' is possibly 'undefined'.
-src/app/[locale]/layout.tsx(243,21): error TS2322: Type '{ pageMeta: any; theme: AppThemeConfig; user?: UserModel | undefined; seo?: SeoOptionModel | undefined; url?: Url | undefined; categories?: CategoryModel[] | undefined; latestNoteId?: { ...; } | undefined; ai?: AggregateAIConfig; }' is not assignable to type 'AggregateRoot'.
-  Types of property 'user' are incompatible.
-    Type 'UserModel | undefined' is not assignable to type 'UserModel'.
-      Type 'undefined' is not assignable to type 'UserModel'.
-src/app/[locale]/notes/page.tsx(12,13): error TS2347: Untyped function calls may not accept type arguments.
-src/app/[locale]/posts/(post-detail)/[category]/page.tsx(15,36): error TS2339: Property 'path' does not exist on type '{}'.
-src/app/[locale]/posts/(post-detail)/[category]/page.tsx(19,36): error TS2339: Property 'path' does not exist on type '{}'.
-src/app/[locale]/posts/loader.tsx(61,26): error TS7006: Parameter 'item' implicitly has an 'any' type.
-src/app/[locale]/posts/loader.tsx(61,32): error TS7006: Parameter 'index' implicitly has an 'any' type.
-src/app/[locale]/posts/page.tsx(75,22): error TS7006: Parameter 'item' implicitly has an 'any' type.
-src/app/[locale]/posts/page.tsx(75,28): error TS7006: Parameter 'index' implicitly has an 'any' type.
-src/app/[locale]/thinking/item.tsx(46,16): error TS7031: Binding element 'code' implicitly has an 'any' type.
-src/app/[locale]/thinking/item.tsx(58,16): error TS7031: Binding element 'code' implicitly has an 'any' type.
-src/app/[locale]/thinking/page.tsx(65,16): error TS7006: Parameter 'res' implicitly has an 'any' type.
-src/app/[locale]/thinking/page.tsx(167,19): error TS7006: Parameter 'item' implicitly has an 'any' type.
-src/app/[locale]/timeline/layout.tsx(46,18): error TS7006: Parameter 'res' implicitly has an 'any' type.
-src/app/[locale]/timeline/page.tsx(108,16): error TS7006: Parameter 'res' implicitly has an 'any' type.
-src/app/feed/route.tsx(38,5): error TS2347: Untyped function calls may not accept type arguments.
-src/app/feed/route.tsx(39,5): error TS2347: Untyped function calls may not accept type arguments.
-src/app/feed/route.tsx(89,17): error TS7006: Parameter 'item' implicitly has an 'any' type.
-src/app/feed/route.tsx(118,51): error TS7006: Parameter 'image' implicitly has an 'any' type.
-src/atoms/url.ts(20,7): error TS2347: Untyped function calls may not accept type arguments.
-src/components/layout/footer/GatewayInfo.tsx(131,35): error TS7006: Parameter 'note' implicitly has an 'any' type.
-src/components/layout/footer/GatewayInfo.tsx(140,35): error TS7006: Parameter 'post' implicitly has an 'any' type.
-src/components/layout/footer/GatewayInfo.tsx(150,35): error TS7006: Parameter 'page' implicitly has an 'any' type.
-src/components/layout/header/internal/OwnerStatus.tsx(32,20): error TS2347: Untyped function calls may not accept type arguments.
+src/components/modules/comment/CommentBox/hooks.tsx(170,14): error TS2339: Property 'readerReply' does not exist on type 'CommentController<unknown>'.
+src/components/modules/comment/CommentBox/hooks.tsx(178,14): error TS2339: Property 'guestReply' does not exist on type 'CommentController<unknown>'.
+src/components/modules/comment/CommentBox/hooks.tsx(189,12): error TS2339: Property 'readerComment' does not exist on type 'CommentController<unknown>'.
 src/components/modules/comment/CommentBox/hooks.tsx(195,24): error TS7006: Parameter 'res' implicitly has an 'any' type.
-src/components/modules/comment/LexicalCommentWrapper.tsx(33,26): error TS2347: Untyped function calls may not accept type arguments.
-src/components/modules/note/NoteTimeline.tsx(50,26): error TS2347: Untyped function calls may not accept type arguments.
-src/components/modules/note/NoteTimeline.tsx(77,46): error TS7006: Parameter 'item' implicitly has an 'any' type.
-src/components/modules/note/NoteTopicDetail.tsx(35,7): error TS2347: Untyped function calls may not accept type arguments.
-src/components/modules/note/NoteTopicInfo.tsx(55,7): error TS2347: Untyped function calls may not accept type arguments.
-src/components/modules/note/NoteTopicInfo.tsx(71,26): error TS7006: Parameter 'item' implicitly has an 'any' type.
-src/components/modules/note/NoteTopicInfo.tsx(84,33): error TS7006: Parameter 'item' implicitly has an 'any' type.
-src/components/modules/post/fab/PostTagsFAB.tsx(67,18): error TS7006: Parameter 'tag' implicitly has an 'any' type.
-src/components/modules/post/fab/PostTagsFAB.tsx(111,12): error TS7006: Parameter 'a' implicitly has an 'any' type.
-src/components/modules/post/fab/PostTagsFAB.tsx(111,15): error TS7006: Parameter 'b' implicitly has an 'any' type.
-src/components/modules/post/fab/PostTagsFAB.tsx(114,15): error TS7006: Parameter 'item' implicitly has an 'any' type.
-src/components/modules/subscribe/SubscribeModal.tsx(139,41): error TS2339: Property 'allowTypes' does not exist on type '{}'.
-src/lib/upload.ts(13,10): error TS2347: Untyped function calls may not accept type arguments.
-src/providers/root/auth-session-provider.ts(18,7): error TS2347: Untyped function calls may not accept type arguments.
-src/queries/hooks/authjs.tsx(20,7): error TS2347: Untyped function calls may not accept type arguments.
-src/queries/hooks/authjs.tsx(24,16): error TS7006: Parameter 'res' implicitly has an 'any' type.
-src/queries/hooks/authjs.tsx(60,27): error TS7006: Parameter 'provider' implicitly has an 'any' type.
+src/components/modules/comment/CommentBox/hooks.tsx(215,10): error TS2339: Property 'guestComment' does not exist on type 'CommentController<unknown>'.
 undefined
 /home/runner/work/Shiro/Shiro/apps/web:
  ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL  Command failed with exit code 2: tsc --noEmit

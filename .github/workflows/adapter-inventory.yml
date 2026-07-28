@@ -28,6 +28,9 @@ jobs:
           find apps/web/src -type f -not -path '*/node_modules/*' | sort \
             > .github/adapter-inventory/tree.txt
 
+          grep -RInE "from ['\"]@mx-space/api-client['\"]|import\(['\"]@mx-space/api-client['\"]\)" apps/web/src 2>/dev/null \
+            > .github/adapter-inventory/imports.txt || true
+
           {
             grep -RIlE '@mx-space/api-client|apiClient|mxClient|aggregate|/api/v2|skills|better-auth|socket\.io|fetch\(' apps/web/src 2>/dev/null || true
             printf '%s\n' apps/web/package.json package.json pnpm-workspace.yaml

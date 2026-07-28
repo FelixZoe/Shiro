@@ -104,6 +104,15 @@ export const useCommentMode = () => useAtomValue(commentModeAtom)
 export const setCommentMode = (mode: CommentBoxMode) =>
   jotaiStore.set(commentModeAtom, mode)
 
+type CoreCommentClient = {
+  guestComment(refId: string, data: unknown): Promise<CommentModel>
+  guestReply(commentId: string, data: unknown): Promise<CommentModel>
+  readerComment(refId: string, data: unknown): Promise<CommentModel>
+  readerReply(commentId: string, data: unknown): Promise<CommentModel>
+}
+
+const coreCommentClient = apiClient.comment as unknown as CoreCommentClient
+
 export const useSendComment = () => {
   const t = useTranslations('comment')
   const commentRefId = useCommentBoxRefIdValue()
@@ -166,16 +175,15 @@ export const useSendComment = () => {
       // Reply Comment
       if (isReply) {
         if (isLogged) {
-          return apiClient.comment
+          return coreCommentClient
             .readerReply(refId, {
               text,
               source,
-              ...(anchor ? { anchor } : {}),
-            } as any)
+            })
             .then(wrappedCompletedCallback)
         } else {
-          return apiClient.comment
-            .guestReply(refId, commentDto as any)
+          return coreCommentClient
+            .guestReply(refId, commentDto)
             .then(wrappedCompletedCallback)
         }
       }
@@ -185,14 +193,14 @@ export const useSendComment = () => {
       const syncToRecently = jotaiStore.get(syncToRecentlyAtom)
 
       if (isLogged) {
-        return apiClient.comment
+        return coreCommentClient
           .readerComment(refId, {
             text,
             isWhispers: isWhisper,
             source,
             ...(anchor ? { anchor } : {}),
-          } as any)
-          .then(async (res) => {
+          })
+          .then(async (res: CommentModel) => {
             if (syncToRecently)
               apiClient.recently.proxy
                 .post({
@@ -211,8 +219,8 @@ export const useSendComment = () => {
       }
       // @ts-ignore
       commentDto.isWhispers = isWhisper
-      return apiClient.comment
-        .guestComment(refId, commentDto as any)
+      return coreCommentClient
+        .guestComment(refId, commentDto)
         .then(wrappedCompletedCallback)
     },
     mutationKey: [commentRefId, 'comment'],

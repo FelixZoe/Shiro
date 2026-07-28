@@ -2,7 +2,6 @@
 .dockerignore
 .drone.yml
 .github/FUNDING.yml
-.github/architecture-audit/tree.txt
 .github/workflows/architecture-audit.yml
 .github/workflows/comment-pr.yml
 .github/workflows/nextjs_bundle_analysis.yml

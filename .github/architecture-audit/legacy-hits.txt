@@ -1,0 +1,22 @@
+./.github/workflows/architecture-audit.yml:37:            '(/api/v2|mongo(db)?|MONGO_|node:20|node:lts|NEXT_PUBLIC_API_URL|NEXT_PUBLIC_CLIENT_API_URL|NEXT_PUBLIC_GATEWAY_URL|docker-compose)' \
+./.drone.yml:16:      path: /home/innei/docker-compose/drone/public/shiro/.env
+./.drone.yml:37:    image: node:20-alpine
+./.drone.yml:68:    image: node:20-alpine
+./apps/web/.env.template:1:NEXT_PUBLIC_API_URL=http://localhost:2333
+./apps/web/.env.template:2:NEXT_PUBLIC_GATEWAY_URL=http://localhost:2333
+./apps/web/.env.template:4:NEXT_PUBLIC_API_URL=https://innei.ren/api/v2
+./apps/web/.env.template:5:NEXT_PUBLIC_GATEWAY_URL=https://api.innei.ren
+./apps/web/src/constants/env.ts:6:  if (isDev) return env('NEXT_PUBLIC_API_URL') || ''
+./apps/web/src/constants/env.ts:8:  if (isClientSide && env('NEXT_PUBLIC_CLIENT_API_URL')) {
+./apps/web/src/constants/env.ts:9:    return env('NEXT_PUBLIC_CLIENT_API_URL') || ''
+./apps/web/src/constants/env.ts:12:  return env('NEXT_PUBLIC_API_URL') || '/api/v2'
+./apps/web/src/constants/env.ts:14:export const GATEWAY_URL = env('NEXT_PUBLIC_GATEWAY_URL') || ''
+./apps/web/src/components/ui/rich-content/LexicalContent.tsx:87:        const r = await fetch(`/api/v2/${path}`)
+./Dockerfile:1:FROM node:lts-alpine AS base
+./Dockerfile:40:ENV NEXT_PUBLIC_API_URL=${BASE_URL}/api/v2
+./Dockerfile:41:ENV NEXT_PUBLIC_GATEWAY_URL=${BASE_URL}
+./pnpm-lock.yaml:3489:      mongodb: ^6.0.0 || ^7.0.0
+./pnpm-lock.yaml:3517:      mongodb:
+./docs/plans/2026-02-27-shiro-monorepo-migration.md:27:rm -f docker-compose.yml Dockerfile .dockerignore .drone.yml
+./docs/plans/2026-02-27-shiro-monorepo-migration.md:63:cp "$SHIROI/docker-compose.yml" "$SHIRO/"
+./README.md:93:wget https://raw.githubusercontent.com/Innei/Shiro/main/docker-compose.yml

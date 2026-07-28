@@ -1,3 +1,7 @@
+# Repository metadata and automation
+.git/
+.github/
+
 # Dependency directories
 node_modules/
 
@@ -12,8 +16,10 @@ dist
 .env.*
 data/
 
-# Temporary architecture reports
-.github/architecture-audit/
+# IDE and local files
+.idea/
+.vscode/
+.DS_Store
 
 # PWA
 sw.js

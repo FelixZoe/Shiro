@@ -1,0 +1,62 @@
+name: Apply native search patch
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/search-patch-only.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Patch SearchFAB
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          path = Path('apps/web/src/components/modules/shared/SearchFAB.tsx')
+          text = path.read_text()
+          for line in [
+              "import { useIsOwnerLogged } from '~/atoms/hooks/owner'\n",
+              "import { MotionButtonBase } from '~/components/ui/button'\n",
+              "import { FloatPopover } from '~/components/ui/float-popover'\n",
+          ]:
+              text = text.replace(line, '')
+          text, count = re.subn(
+              r"return\s+apiClient\.search\.proxy\('algolia'\)\.get\(\{\s*params:\s*\{\s*keyword,?\s*\},\s*\}\)",
+              "return (apiClient.search as any).searchAll(String(keyword))",
+              text,
+              count=1,
+          )
+          if count != 1:
+              raise SystemExit(f'expected one Algolia call, replaced {count}')
+          text = text.replace('  const isLogged = useIsOwnerLogged()\n\n', '', 1)
+          start_marker = '      <div className="flex shrink-0 items-center justify-between px-4 py-2">'
+          end_marker = '      </div>\n    </m.div>'
+          start = text.find(start_marker)
+          end = text.find(end_marker, start)
+          if start < 0 or end < 0:
+              raise SystemExit('Algolia footer not found')
+          text = (
+              text[:start]
+              + '      <div className="flex shrink-0 items-center justify-end px-4 py-2 text-xs text-zinc-500">\n'
+              + '        Mix Space Search\n'
+              + '      </div>\n'
+              + text[end + len('      </div>\n'):]
+          )
+          path.write_text(text)
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add apps/web/src/components/modules/shared/SearchFAB.tsx
+          git commit -m 'fix: use Core v3 native search'
+          git push

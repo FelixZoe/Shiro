@@ -154,3 +154,4 @@ jobs:
           git push origin HEAD:main
 
 # Rebuild marker: locale rewrite and sitemap fixes
+# Rebuild marker: feed and sitemap.xml fixes

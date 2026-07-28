@@ -1,0 +1,54 @@
+name: Architecture audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/architecture-audit.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Collect architecture files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .github/architecture-audit
+          find . -type f \
+            -not -path './.git/*' \
+            -not -path './node_modules/*' \
+            -not -path './.next/*' \
+            | sed 's#^./##' | sort > .github/architecture-audit/tree.txt
+
+          : > .github/architecture-audit/deployment.txt
+          while IFS= read -r file; do
+            case "$file" in
+              *docker*|*Docker*|*compose*|*.env*|*.example|*.yaml|*.yml|*.json|*.md|*.mjs|*.cjs|*.ts|*.tsx)
+                case "$file" in
+                  pnpm-lock.yaml|*.snap|*.map) continue ;;
+                esac
+                if grep -Eiq 'mongo|postgres|redis|database|docker|compose|NEXT_PUBLIC_API_URL|CLIENT_API_URL|GATEWAY_URL|API_URL|/api/v[0-9]|upload|storage|mx-space|2333' "$file" 2>/dev/null; then
+                  printf '\n===== FILE: %s =====\n' "$file" >> .github/architecture-audit/deployment.txt
+                  cat "$file" >> .github/architecture-audit/deployment.txt
+                  printf '\n' >> .github/architecture-audit/deployment.txt
+                fi
+                ;;
+            esac
+          done < .github/architecture-audit/tree.txt
+      - name: Commit audit
+        shell: bash
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add .github/architecture-audit
+          git diff --cached --quiet && exit 0
+          git commit -m 'chore: record deployment architecture audit'
+          git push

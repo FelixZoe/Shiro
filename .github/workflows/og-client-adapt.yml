@@ -1,0 +1,64 @@
+name: Adapt OG route client
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/og-client-adapt.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Use shared compatibility client
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('apps/web/src/app/[locale]/og/route.tsx')
+          text = path.read_text()
+          old = """import type { Image } from '@mx-space/api-client'
+import {
+  AggregateController,
+  createClient,
+  NoteController,
+  PageController,
+  PostController,
+} from '@mx-space/api-client'
+import { fetchAdaptor } from '@mx-space/api-client/dist/adaptors/fetch'
+"""
+          if old not in text:
+              raise SystemExit('old OG client imports not found')
+          text = text.replace(old, "import type { Image } from '@mx-space/api-client'\n", 1)
+          text = text.replace("import { API_URL } from '~/constants/env'\n", '', 1)
+          anchor = "import zhMessages from '~/messages/zh/common.json'\n"
+          if anchor not in text:
+              raise SystemExit('OG import anchor not found')
+          text = text.replace(anchor, anchor + "import { apiClient } from '~/lib/request'\n", 1)
+          client = """const apiClient = createClient(fetchAdaptor)(API_URL, {
+  controllers: [
+    PostController,
+    NoteController,
+    PageController,
+    AggregateController,
+  ],
+})
+
+"""
+          if client not in text:
+              raise SystemExit('old OG client factory not found')
+          text = text.replace(client, '', 1)
+          path.write_text(text)
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add apps/web/src/app/'[locale]'/og/route.tsx
+          git commit -m 'fix: use Core v3 compatibility client for OG routes'
+          git push

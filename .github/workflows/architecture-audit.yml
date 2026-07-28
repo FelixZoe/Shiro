@@ -14,7 +14,7 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     env:
-      VALIDATION_PASS: "4"
+      VALIDATION_PASS: "5"
       CI: "true"
       NEXT_TELEMETRY_DISABLED: "1"
     steps:
@@ -31,6 +31,96 @@ jobs:
           node-version: 22
           cache: pnpm
 
+      - name: Adapt removed Core routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          search_path = Path('apps/web/src/components/modules/shared/SearchFAB.tsx')
+          text = search_path.read_text()
+          for old in [
+              "import { useIsOwnerLogged } from '~/atoms/hooks/owner'\n",
+              "import { MotionButtonBase } from '~/components/ui/button'\n",
+              "import { FloatPopover } from '~/components/ui/float-popover'\n",
+          ]:
+              if old not in text:
+                  raise SystemExit(f'missing SearchFAB import: {old!r}')
+              text = text.replace(old, '', 1)
+
+          old_query = """      return apiClient.search.proxy('algolia').get({
+                params: {
+                  keyword,
+                },
+              })"""
+          new_query = """      return (apiClient.search as any).searchAll(String(keyword))"""
+          if old_query not in text:
+              raise SystemExit('old Algolia search request not found')
+          text = text.replace(old_query, new_query, 1)
+
+          old_logged = '  const isLogged = useIsOwnerLogged()\n\n'
+          if old_logged not in text:
+              raise SystemExit('old owner search control not found')
+          text = text.replace(old_logged, '', 1)
+
+          footer_start = text.index(
+              '      <div className="flex shrink-0 items-center justify-between px-4 py-2">'
+          )
+          footer_end_marker = '      </div>\n    </m.div>'
+          footer_end = text.index(footer_end_marker, footer_start)
+          text = (
+              text[:footer_start]
+              + '      <div className="flex shrink-0 items-center justify-end px-4 py-2 text-xs text-zinc-500">\n'
+              + '        Mix Space Search\n'
+              + '      </div>\n'
+              + text[footer_end + len('      </div>\n'):]
+          )
+          search_path.write_text(text)
+
+          common_proxy = """import { API_URL, GATEWAY_URL } from '~/constants/env'
+
+export const dynamic = 'force-dynamic'
+export const revalidate = REVALIDATE
+
+function resolveCoreRoot() {
+  if (/^https?:\\/\\//.test(API_URL)) {
+    return API_URL.replace(/\\/api\\/v3\\/?$/, '').replace(/\\/$/, '')
+  }
+  if (/^https?:\\/\\//.test(GATEWAY_URL)) {
+    return GATEWAY_URL.replace(/\\/$/, '')
+  }
+  return 'http://localhost:2333'
+}
+
+export async function GET() {
+  const response = await fetch(`${resolveCoreRoot()}ROOT_PATH`, {
+    next: { revalidate },
+  })
+
+  if (!response.ok) {
+    return new Response(`Core request failed: ${response.status}`, {
+      status: 502,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+    })
+  }
+
+  return new Response(await response.text(), {
+    headers: {
+      'Content-Type': 'application/xml; charset=utf-8',
+      'Cache-Control': `max-age=60, s-maxage=${revalidate}`,
+    },
+  })
+}
+"""
+          Path('apps/web/src/app/feed/route.tsx').write_text(
+              common_proxy.replace('REVALIDATE', '60').replace('ROOT_PATH', '/feed')
+          )
+          Path('apps/web/src/app/[locale]/sitemap/route.tsx').write_text(
+              common_proxy.replace('REVALIDATE', '3600').replace('ROOT_PATH', '/sitemap')
+          )
+          PY
+
       - name: Scan legacy references and API calls
         shell: bash
         run: |
@@ -41,7 +131,7 @@ jobs:
             --exclude-dir=node_modules \
             --exclude-dir=.next \
             --exclude-dir=architecture-audit \
-            '(/api/v2|MONGO_|mongodb://|node:20|node:lts)' \
+            '(/api/v2|MONGO_|mongodb://|node:20|node:lts|search\.proxy\(.algolia.|aggregate\.proxy\.(feed|sitemap))' \
             . > .github/architecture-audit/legacy-hits.txt || true
 
           grep -RInE \
@@ -99,28 +189,40 @@ jobs:
           PY
           exit 0
 
+      - name: Build production Docker image
+        shell: bash
+        run: |
+          set +e
+          docker build --progress=plain -t shiro-core-v3-validation . > /tmp/docker-build.raw 2>&1
+          status=$?
+          printf '%s\n' "$status" > .github/architecture-audit/docker-build.status
+          tail -n 300 /tmp/docker-build.raw > .github/architecture-audit/docker-build.txt
+          exit 0
+
       - name: Write summary
         shell: bash
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
-          names = ['compose', 'dockerfile', 'typecheck', 'build']
-          result = {'validationPass': 4}
+          names = ['compose', 'dockerfile', 'typecheck', 'build', 'docker-build']
+          result = {'validationPass': 5}
           for name in names:
-              result[name] = int(Path(f'.github/architecture-audit/{name}.status').read_text().strip())
+              result[name.replace('-', '')] = int(
+                  Path(f'.github/architecture-audit/{name}.status').read_text().strip()
+              )
           result['legacyHitCount'] = len(Path('.github/architecture-audit/legacy-hits.txt').read_text().splitlines())
           result['apiCallLineCount'] = len(Path('.github/architecture-audit/api-calls.txt').read_text().splitlines())
           Path('.github/architecture-audit/summary.json').write_text(json.dumps(result, indent=2) + '\n')
           PY
 
-      - name: Commit validation reports
+      - name: Commit adaptation and validation reports
         shell: bash
         run: |
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add .github/architecture-audit
+          git add apps/web/src .github/architecture-audit
           git diff --cached --quiet && exit 0
-          git commit -m 'chore: record final Core v3 validation'
+          git commit -m 'fix: replace removed Core v2 routes'
           git push

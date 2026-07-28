@@ -15,7 +15,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     env:
-      VALIDATION_PASS: '5'
+      VALIDATION_PASS: '6'
       CI: 'true'
       NEXT_TELEMETRY_DISABLED: '1'
     steps:
@@ -40,9 +40,14 @@ jobs:
         run: |
           set +e
           mkdir -p .github/adapter-build
-          pnpm --filter @shiro/web exec tsc --noEmit > .github/adapter-build/typecheck.log 2>&1
+          pnpm --filter @shiro/web exec tsc --noEmit >/tmp/typecheck.raw 2>&1
           status=$?
           printf '%s\n' "$status" > .github/adapter-build/typecheck.status
+          python - <<'PY'
+          from pathlib import Path
+          raw = Path('/tmp/typecheck.raw').read_bytes()
+          Path('.github/adapter-build/typecheck.txt').write_text(raw.decode('utf-8', 'replace'))
+          PY
           exit 0
 
       - name: Run production build
@@ -50,19 +55,42 @@ jobs:
         run: |
           set +e
           mkdir -p .github/adapter-build
-          {
-            echo "VALIDATION_PASS=$VALIDATION_PASS"
-            echo "NODE=$(node --version)"
-            echo "PNPM=$(pnpm --version)"
-            echo "PWD=$(pwd)"
-            echo "START_BUILD"
-            pnpm --filter @shiro/web run build:ci
-            status=$?
-            echo "BUILD_EXIT_STATUS=$status"
-          } > .github/adapter-build/build-pass5.log 2>&1
-          printf '%s\n' "$status" > .github/adapter-build/build-pass5.status
-          cp .github/adapter-build/build-pass5.log .github/adapter-build/build.log
-          cp .github/adapter-build/build-pass5.status .github/adapter-build/build.status
+          pnpm --filter @shiro/web run build:ci >/tmp/build.raw 2>&1
+          status=$?
+          bytes=$(wc -c </tmp/build.raw | tr -d ' ')
+          lines=$(wc -l </tmp/build.raw | tr -d ' ')
+          printf '%s\n' "$status" > .github/adapter-build/build.status
+          BUILD_STATUS="$status" BUILD_BYTES="$bytes" BUILD_LINES="$lines" python - <<'PY'
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          raw = Path('/tmp/build.raw').read_bytes()
+          text = raw.decode('utf-8', 'replace').replace('\x00', '')
+          text = re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]', '', text)
+          Path('.github/adapter-build/build.txt').write_text(
+              'VALIDATION_PASS=6\n'
+              f"NODE={os.popen('node --version').read().strip()}\n"
+              f"PNPM={os.popen('pnpm --version').read().strip()}\n"
+              f"BUILD_EXIT_STATUS={os.environ['BUILD_STATUS']}\n"
+              f"RAW_BYTES={os.environ['BUILD_BYTES']}\n"
+              f"RAW_LINES={os.environ['BUILD_LINES']}\n"
+              '--- OUTPUT ---\n'
+              + text
+          )
+          Path('.github/adapter-build/build-diagnostic.json').write_text(
+              json.dumps(
+                  {
+                      'validationPass': 6,
+                      'status': int(os.environ['BUILD_STATUS']),
+                      'rawBytes': int(os.environ['BUILD_BYTES']),
+                      'rawLines': int(os.environ['BUILD_LINES']),
+                  },
+                  indent=2,
+              ) + '\n'
+          )
+          PY
           exit 0
 
       - name: Commit reports

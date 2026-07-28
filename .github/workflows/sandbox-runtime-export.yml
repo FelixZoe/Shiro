@@ -152,3 +152,5 @@ jobs:
           git commit -m 'chore: record sandbox runtime artifact'
           git pull --rebase origin main
           git push origin HEAD:main
+
+# Rebuild marker: locale rewrite and sitemap fixes

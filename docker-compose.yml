@@ -26,10 +26,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      # Build-time values must not depend on Compose DNS. Runtime values below
+      # replace them when the container joins the mx-space network.
       args:
-        NEXT_PUBLIC_API_URL: http://core:2333/api/v3
-        NEXT_PUBLIC_CLIENT_API_URL: ${PUBLIC_CORE_API_URL:-http://localhost:2333/api/v3}
-        NEXT_PUBLIC_GATEWAY_URL: ${PUBLIC_CORE_ORIGIN:-http://localhost:2333}
+        NEXT_PUBLIC_API_URL: /api/v3
+        NEXT_PUBLIC_CLIENT_API_URL: ""
+        NEXT_PUBLIC_GATEWAY_URL: ""
     image: felixzoe/shiro:core-v3
     environment:
       NODE_ENV: production

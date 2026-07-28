@@ -1,0 +1,88 @@
+name: Deterministic latest validation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/latest-quick-validation.yml
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      CI: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.27.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Validate
+        shell: bash
+        run: |
+          set +e
+          report=.github/latest-quick-validation
+          mkdir -p "$report"
+
+          pnpm --filter @shiro/web exec tsc --noEmit > "$report/typecheck.txt" 2>&1
+          printf '%s\n' "$?" > "$report/typecheck.status"
+
+          pnpm --filter @shiro/web run build:ci > "$report/build.txt" 2>&1
+          printf '%s\n' "$?" > "$report/build.status"
+
+          cat > /tmp/shiro-validation.env <<'EOF'
+          POSTGRES_PASSWORD=validation-password
+          JWT_SECRET=validation-only-jwt-secret-with-sufficient-length
+          ENCRYPT_KEY=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+          PUBLIC_CORE_ORIGIN=http://localhost:2333
+          PUBLIC_CORE_API_URL=http://localhost:2333/api/v3
+          MONGO_URI=mongodb://host.docker.internal:27017/mx-space
+          MIGRATION_MODE=dry-run
+          MIGRATION_SNOWFLAKE_WORKER_ID=900
+          EOF
+
+          docker compose --env-file /tmp/shiro-validation.env config > "$report/compose.txt" 2>&1
+          printf '%s\n' "$?" > "$report/compose.status"
+
+          docker compose --env-file /tmp/shiro-validation.env --profile mongo-migration config > "$report/migration-compose.txt" 2>&1
+          printf '%s\n' "$?" > "$report/migration-compose.status"
+
+          docker build --check . > "$report/dockerfile.txt" 2>&1
+          printf '%s\n' "$?" > "$report/dockerfile.status"
+
+          grep -RInE \
+            --include='*.ts' --include='*.tsx' \
+            '(/api/v2|search\.proxy\(.algolia.|aggregate\.proxy\.(feed|sitemap)|createClient\(fetchAdaptor\))' \
+            apps/web/src > "$report/legacy-routes.txt" || true
+          grep -nE '(node:20|node:lts|--arch=x64)' Dockerfile .drone.yml >> "$report/legacy-routes.txt" || true
+          exit 0
+      - name: Summarize and commit
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          base = Path('.github/latest-quick-validation')
+          names = ['typecheck', 'build', 'compose', 'migration-compose', 'dockerfile']
+          result = {
+              name.replace('-', ''): int((base / f'{name}.status').read_text().strip())
+              for name in names
+          }
+          result['legacyRouteHits'] = len((base / 'legacy-routes.txt').read_text().splitlines())
+          (base / 'summary.json').write_text(json.dumps(result, indent=2) + '\n')
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add .github/latest-quick-validation
+          git commit -m 'chore: record deterministic latest validation'
+          git push

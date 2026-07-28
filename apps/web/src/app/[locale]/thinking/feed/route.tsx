@@ -1,5 +1,3 @@
-import type { AggregateRoot } from '@mx-space/api-client'
-import { simpleCamelcaseKeys } from '@mx-space/api-client'
 import RSS from 'rss'
 
 import { apiClient } from '~/lib/request'
@@ -9,14 +7,7 @@ export const revalidate = 86400 // 1 day
 
 export async function GET() {
   const [agg, thinking] = await Promise.all([
-    fetch(apiClient.aggregate.proxy.toString(true), {
-      next: {
-        revalidate: 86400,
-      },
-    }).then(
-      async (res) =>
-        simpleCamelcaseKeys(await res.json()) as Promise<AggregateRoot>,
-    ),
+    apiClient.aggregate.getAggregateData('shiro'),
     apiClient.recently.getList({
       size: 20,
     }),
@@ -35,17 +26,15 @@ export async function GET() {
     pubDate: now.toUTCString(),
   })
 
-  for (const t of thinking.data) {
+  for (const item of thinking.data) {
+    const itemUrl = `${agg.url.webUrl}/thinking/${item.id}`
+    const reference = item.ref?.title ? `引用：${item.ref.title}` : ''
     feed.item({
-      title: new Date(t.created).toLocaleDateString(),
-      description:
-        `${t.content}\n\n${t.ref?.title ? `引用：${t.ref.title}` : ''}\n\n` +
-        ` <p style='text-align: right'>
-      <a href='${`${agg.url.webUrl}/thinking/${t.id}`}'>看完了？说点什么呢</a>
-      </p>`,
+      title: new Date(item.created).toLocaleDateString(),
+      description: `${item.content}\n\n${reference}\n\n<p style="text-align: right"><a href="${itemUrl}">看完了？说点什么呢</a></p>`,
       url: `${agg.url.webUrl}/thinking`,
-      guid: t.id,
-      date: t.created,
+      guid: item.id,
+      date: item.created,
     })
   }
 

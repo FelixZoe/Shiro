@@ -2,34 +2,17 @@ import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 import type { Image } from '@mx-space/api-client'
-import {
-  AggregateController,
-  createClient,
-  NoteController,
-  PageController,
-  PostController,
-} from '@mx-space/api-client'
-import { fetchAdaptor } from '@mx-space/api-client/dist/adaptors/fetch'
 import { ImageResponse } from 'next/og'
 import type { NextRequest } from 'next/server'
 
-import { API_URL } from '~/constants/env'
 import { defaultLocale } from '~/i18n/config'
 import zhMessages from '~/messages/zh/common.json'
+import { apiClient } from '~/lib/request'
 
 const messagesMap = {
   en: () => import('~/messages/en/common.json').then((m) => m.default),
   ja: () => import('~/messages/ja/common.json').then((m) => m.default),
 } as const
-
-const apiClient = createClient(fetchAdaptor)(API_URL, {
-  controllers: [
-    PostController,
-    NoteController,
-    PageController,
-    AggregateController,
-  ],
-})
 
 export const runtime = 'nodejs'
 

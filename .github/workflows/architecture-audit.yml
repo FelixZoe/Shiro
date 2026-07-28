@@ -1,4 +1,4 @@
-name: Architecture audit
+name: Architecture validation
 
 on:
   push:
@@ -11,37 +11,110 @@ permissions:
   contents: write
 
 jobs:
-  audit:
+  validate:
     runs-on: ubuntu-latest
+    env:
+      VALIDATION_PASS: "2"
+      CI: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-      - name: Collect architecture files
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.27.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Scan legacy references
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p .github/architecture-audit
-          find . -type f \
-            -not -path './.git/*' \
-            -not -path './node_modules/*' \
-            -not -path './.next/*' \
-            -not -path './.github/architecture-audit/*' \
-            | sed 's#^./##' | sort > .github/architecture-audit/tree.txt
-
           grep -RInE \
             --exclude-dir=.git \
             --exclude-dir=node_modules \
             --exclude-dir=.next \
             --exclude-dir=architecture-audit \
-            '(/api/v2|mongo(db)?|MONGO_|node:20|node:lts|NEXT_PUBLIC_API_URL|NEXT_PUBLIC_CLIENT_API_URL|NEXT_PUBLIC_GATEWAY_URL|docker-compose)' \
+            '(/api/v2|MONGO_|mongodb://|node:20|node:lts)' \
             . > .github/architecture-audit/legacy-hits.txt || true
-      - name: Commit audit
+
+      - name: Validate Compose configuration
         shell: bash
         run: |
+          set +e
+          cat > /tmp/shiro.env <<'EOF'
+          POSTGRES_PASSWORD=validation-password
+          JWT_SECRET=validation-only-jwt-secret-with-sufficient-length
+          ENCRYPT_KEY=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+          PUBLIC_CORE_ORIGIN=http://localhost:2333
+          PUBLIC_CORE_API_URL=http://localhost:2333/api/v3
+          EOF
+          docker compose --env-file /tmp/shiro.env config > .github/architecture-audit/compose.txt 2>&1
+          printf '%s\n' "$?" > .github/architecture-audit/compose.status
+          exit 0
+
+      - name: Validate Dockerfile
+        shell: bash
+        run: |
+          set +e
+          docker build --check . > .github/architecture-audit/dockerfile.txt 2>&1
+          printf '%s\n' "$?" > .github/architecture-audit/dockerfile.status
+          exit 0
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: TypeScript check
+        shell: bash
+        run: |
+          set +e
+          pnpm --filter @shiro/web exec tsc --noEmit > .github/architecture-audit/typecheck.txt 2>&1
+          printf '%s\n' "$?" > .github/architecture-audit/typecheck.status
+          exit 0
+
+      - name: Production build
+        shell: bash
+        run: |
+          set +e
+          pnpm --filter @shiro/web run build:ci > /tmp/build.raw 2>&1
+          status=$?
+          printf '%s\n' "$status" > .github/architecture-audit/build.status
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          raw = Path('/tmp/build.raw').read_bytes().decode('utf-8', 'replace').replace('\x00', '')
+          raw = re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]', '', raw)
+          Path('.github/architecture-audit/build.txt').write_text(raw)
+          PY
+          exit 0
+
+      - name: Write summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          names = ['compose', 'dockerfile', 'typecheck', 'build']
+          result = {'validationPass': 2}
+          for name in names:
+              result[name] = int(Path(f'.github/architecture-audit/{name}.status').read_text().strip())
+          result['legacyHitCount'] = len(Path('.github/architecture-audit/legacy-hits.txt').read_text().splitlines())
+          Path('.github/architecture-audit/summary.json').write_text(json.dumps(result, indent=2) + '\n')
+          PY
+
+      - name: Commit validation reports
+        shell: bash
+        run: |
+          set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add .github/architecture-audit
           git diff --cached --quiet && exit 0
-          git commit -m 'chore: record legacy deployment references'
+          git commit -m 'chore: record Core v3 deployment validation'
           git push

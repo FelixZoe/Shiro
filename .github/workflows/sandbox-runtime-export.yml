@@ -155,3 +155,4 @@ jobs:
 
 # Rebuild marker: locale rewrite and sitemap fixes
 # Rebuild marker: feed and sitemap.xml fixes
+# Rebuild marker: preserve next-intl response

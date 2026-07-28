@@ -89,7 +89,7 @@ jobs:
         shell: bash
         run: |
           set -e
-          mkdir -p sandbox-package/reports sandbox-package/runtime
+          mkdir -p sandbox-package/reports /tmp/shiro-runtime
           cp /tmp/install.log sandbox-package/reports/
           cp /tmp/typecheck.log sandbox-package/reports/
           cp /tmp/build.log sandbox-package/reports/
@@ -98,10 +98,11 @@ jobs:
           cp /tmp/dockerfile.log sandbox-package/reports/
           git archive --format=tar.gz -o sandbox-package/source.tar.gz HEAD
           if [ -d apps/web/.next/standalone ]; then
-            cp -a apps/web/.next/standalone/. sandbox-package/runtime/
-            mkdir -p sandbox-package/runtime/apps/web/.next
-            cp -a apps/web/.next/static sandbox-package/runtime/apps/web/.next/
-            cp -a apps/web/public sandbox-package/runtime/apps/web/
+            cp -a apps/web/.next/standalone/. /tmp/shiro-runtime/
+            mkdir -p /tmp/shiro-runtime/apps/web/.next
+            cp -a apps/web/.next/static /tmp/shiro-runtime/apps/web/.next/
+            cp -a apps/web/public /tmp/shiro-runtime/apps/web/
+            tar -C /tmp/shiro-runtime -czf sandbox-package/runtime.tar.gz .
           fi
           cat > sandbox-package/reports/summary.json <<EOF
           {
@@ -124,7 +125,7 @@ jobs:
           path: sandbox-package
           if-no-files-found: error
           retention-days: 1
-          compression-level: 6
+          compression-level: 0
 
       - name: Record artifact reference
         shell: bash

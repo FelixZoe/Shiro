@@ -1,14 +1,21 @@
 # Dependency directories
 node_modules/
 
-# next.js build output
+# Next.js build output
 .next
 
-# typescript build output
+# TypeScript build output
 dist
-.env
 
-# pwa
+# Local configuration and persistent service data
+.env
+.env.*
+data/
+
+# Temporary architecture reports
+.github/architecture-audit/
+
+# PWA
 sw.js
 sw.js.*
 workbox-*.js

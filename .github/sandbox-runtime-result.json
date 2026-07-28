@@ -1,0 +1,12 @@
+{
+  "commit": "9cc3ac8370d14acd9e3a45144a8c1a64be84365d",
+  "runId": "30364708659",
+  "artifactId": "8690362404",
+  "artifactName": "shiro-sandbox-runtime-30364708659",
+  "install": 0,
+  "typecheck": 0,
+  "build": 0,
+  "compose": 0,
+  "migrationCompose": 0,
+  "dockerfile": 0
+}

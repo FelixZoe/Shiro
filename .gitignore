@@ -13,6 +13,9 @@ node_modules
 # production
 /build
 
+# Docker Compose persistence (PostgreSQL, Redis and Core uploads)
+/data/
+
 # misc
 .DS_Store
 *.pem

@@ -15,7 +15,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     env:
-      VALIDATION_PASS: '6'
+      VALIDATION_PASS: '7'
       CI: 'true'
       NEXT_TELEMETRY_DISABLED: '1'
     steps:
@@ -70,7 +70,7 @@ jobs:
           text = raw.decode('utf-8', 'replace').replace('\x00', '')
           text = re.sub(r'\x1b\[[0-?]*[ -/]*[@-~]', '', text)
           Path('.github/adapter-build/build.txt').write_text(
-              'VALIDATION_PASS=6\n'
+              'VALIDATION_PASS=7\n'
               f"NODE={os.popen('node --version').read().strip()}\n"
               f"PNPM={os.popen('pnpm --version').read().strip()}\n"
               f"BUILD_EXIT_STATUS={os.environ['BUILD_STATUS']}\n"
@@ -82,7 +82,7 @@ jobs:
           Path('.github/adapter-build/build-diagnostic.json').write_text(
               json.dumps(
                   {
-                      'validationPass': 6,
+                      'validationPass': 7,
                       'status': int(os.environ['BUILD_STATUS']),
                       'rawBytes': int(os.environ['BUILD_BYTES']),
                       'rawLines': int(os.environ['BUILD_LINES']),

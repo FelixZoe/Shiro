@@ -118,46 +118,73 @@ export function LexicalContent({
   variant,
   className,
 }: LexicalContentProps) {
+  const editorState = useMemo<SerializedEditorState | null>(() => {
+    try {
+      return JSON.parse(content)
+    } catch {
+      return null
+    }
+  }, [content])
+
   const isDark = useIsDark()
   const { present } = useModalStack()
-  const presentDialog = useCallback<PresentDialogFn>(
-    (content, options) => {
+  const presentDialog: PresentDialogFn = useCallback(
+    (props) =>
       present({
-        content,
-        title: options?.title,
-        clickOutsideToDismiss: true,
-      })
-    },
+        title: props.title || ' ',
+        content: props.content,
+        clickOutsideToDismiss: props.clickOutsideToDismiss,
+        modalClassName: props.className,
+      }),
     [present],
   )
-  const parsedContent = useMemo(
-    () => JSON.parse(content) as SerializedEditorState,
-    [content],
-  )
 
-  const themeStyle = useMemo(
+  const baseVarStyle = useMemo(
     () =>
-      createThemeStyle({
-        fonts: {
-          sans: fallbackSansFont,
-          serif: fallbackSerifFont,
-          mono: fallbackMonoFont,
-        },
-      }),
+      ({
+        '--font-sans': fallbackSansFont,
+        '--font-serif': fallbackSerifFont,
+        '--font-mono': fallbackMonoFont,
+      }) as React.CSSProperties,
     [],
   )
+
+  const editorOverrideStyle = useMemo(
+    () =>
+      createThemeStyle({
+        color: {
+          accent: 'var(--color-accent, #33a6b8)',
+          link: 'var(--color-accent, #33a6b8)',
+          accentLight:
+            'color-mix(in srgb, var(--color-accent, #33a6b8) 20%, transparent)',
+          quoteBorder: 'var(--color-accent, #33a6b8)',
+        },
+        layout: { maxWidth: '100%' },
+        typography: {
+          fontFamily:
+            variant === 'note'
+              ? `var(--note-font-override, ${fallbackSerifFont})`
+              : fallbackSansFont,
+          fontFamilySerif: fallbackSerifFont,
+          fontMono: fallbackMonoFont,
+        },
+      }),
+    [variant],
+  )
+
+  if (!editorState) return null
 
   return (
     <PresentDialogProvider value={presentDialog}>
       <LinkCardFetchProvider value={linkCardFetchContext}>
-        <div className={clsx(className, themeStyle.className)}>
-          <ShiroRenderer
-            editorState={parsedContent}
-            variant={variant}
-            theme={isDark ? 'dark' : 'light'}
-            config={customRendererConfig}
-          />
-        </div>
+        <ShiroRenderer
+          className={clsx(className, 'bg-transparent!')}
+          rendererConfig={customRendererConfig}
+          style={{ ...baseVarStyle, ...editorOverrideStyle }}
+          theme={isDark ? 'dark' : 'light'}
+          value={editorState}
+          variant={variant}
+        />
       </LinkCardFetchProvider>
     </PresentDialogProvider>
   )

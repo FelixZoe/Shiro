@@ -1,8 +1,0 @@
-src/components/modules/comment/CommentBox/hooks.tsx(170,14): error TS2339: Property 'readerReply' does not exist on type 'CommentController<unknown>'.
-src/components/modules/comment/CommentBox/hooks.tsx(178,14): error TS2339: Property 'guestReply' does not exist on type 'CommentController<unknown>'.
-src/components/modules/comment/CommentBox/hooks.tsx(189,12): error TS2339: Property 'readerComment' does not exist on type 'CommentController<unknown>'.
-src/components/modules/comment/CommentBox/hooks.tsx(195,24): error TS7006: Parameter 'res' implicitly has an 'any' type.
-src/components/modules/comment/CommentBox/hooks.tsx(215,10): error TS2339: Property 'guestComment' does not exist on type 'CommentController<unknown>'.
-undefined
-/home/runner/work/Shiro/Shiro/apps/web:
- ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL  Command failed with exit code 2: tsc --noEmit

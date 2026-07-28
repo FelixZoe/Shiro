@@ -1,0 +1,153 @@
+name: Sandbox runtime export
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/sandbox-runtime-export.yml
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-export:
+    runs-on: ubuntu-latest
+    env:
+      CI: "true"
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.27.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        id: install
+        shell: bash
+        run: |
+          set +e
+          pnpm install --frozen-lockfile > /tmp/install.log 2>&1
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: TypeScript check
+        id: typecheck
+        shell: bash
+        run: |
+          set +e
+          pnpm --filter @shiro/web exec tsc --noEmit > /tmp/typecheck.log 2>&1
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Production build
+        id: build
+        shell: bash
+        run: |
+          set +e
+          pnpm --filter @shiro/web run build:ci > /tmp/build.log 2>&1
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Compose checks
+        id: compose
+        shell: bash
+        run: |
+          set +e
+          cat > /tmp/shiro-validation.env <<'EOF'
+          POSTGRES_PASSWORD=validation-password
+          JWT_SECRET=validation-only-jwt-secret-with-sufficient-length
+          ENCRYPT_KEY=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+          PUBLIC_CORE_ORIGIN=http://localhost:2333
+          PUBLIC_CORE_API_URL=http://localhost:2333/api/v3
+          MONGO_URI=mongodb://host.docker.internal:27017/mx-space
+          MIGRATION_MODE=dry-run
+          MIGRATION_SNOWFLAKE_WORKER_ID=900
+          EOF
+          docker compose --env-file /tmp/shiro-validation.env config > /tmp/compose.log 2>&1
+          compose_status=$?
+          docker compose --env-file /tmp/shiro-validation.env --profile mongo-migration config > /tmp/migration-compose.log 2>&1
+          migration_status=$?
+          docker build --check . > /tmp/dockerfile.log 2>&1
+          dockerfile_status=$?
+          echo "compose_status=$compose_status" >> "$GITHUB_OUTPUT"
+          echo "migration_status=$migration_status" >> "$GITHUB_OUTPUT"
+          echo "dockerfile_status=$dockerfile_status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Prepare sandbox package
+        shell: bash
+        run: |
+          set -e
+          mkdir -p sandbox-package/reports sandbox-package/runtime
+          cp /tmp/install.log sandbox-package/reports/
+          cp /tmp/typecheck.log sandbox-package/reports/
+          cp /tmp/build.log sandbox-package/reports/
+          cp /tmp/compose.log sandbox-package/reports/
+          cp /tmp/migration-compose.log sandbox-package/reports/
+          cp /tmp/dockerfile.log sandbox-package/reports/
+          git archive --format=tar.gz -o sandbox-package/source.tar.gz HEAD
+          if [ -d apps/web/.next/standalone ]; then
+            cp -a apps/web/.next/standalone/. sandbox-package/runtime/
+            mkdir -p sandbox-package/runtime/apps/web/.next
+            cp -a apps/web/.next/static sandbox-package/runtime/apps/web/.next/
+            cp -a apps/web/public sandbox-package/runtime/apps/web/
+          fi
+          cat > sandbox-package/reports/summary.json <<EOF
+          {
+            "commit": "$GITHUB_SHA",
+            "runId": "$GITHUB_RUN_ID",
+            "install": ${{ steps.install.outputs.status }},
+            "typecheck": ${{ steps.typecheck.outputs.status }},
+            "build": ${{ steps.build.outputs.status }},
+            "compose": ${{ steps.compose.outputs.compose_status }},
+            "migrationCompose": ${{ steps.compose.outputs.migration_status }},
+            "dockerfile": ${{ steps.compose.outputs.dockerfile_status }}
+          }
+          EOF
+
+      - name: Upload sandbox package
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: shiro-sandbox-runtime-${{ github.run_id }}
+          path: sandbox-package
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 6
+
+      - name: Record artifact reference
+        shell: bash
+        run: |
+          set -e
+          mkdir -p .github
+          cat > .github/sandbox-runtime-result.json <<EOF
+          {
+            "commit": "$GITHUB_SHA",
+            "runId": "$GITHUB_RUN_ID",
+            "artifactId": "${{ steps.upload.outputs.artifact-id }}",
+            "artifactName": "shiro-sandbox-runtime-$GITHUB_RUN_ID",
+            "install": ${{ steps.install.outputs.status }},
+            "typecheck": ${{ steps.typecheck.outputs.status }},
+            "build": ${{ steps.build.outputs.status }},
+            "compose": ${{ steps.compose.outputs.compose_status }},
+            "migrationCompose": ${{ steps.compose.outputs.migration_status }},
+            "dockerfile": ${{ steps.compose.outputs.dockerfile_status }}
+          }
+          EOF
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add .github/sandbox-runtime-result.json
+          git commit -m 'chore: record sandbox runtime artifact'
+          git pull --rebase origin main
+          git push origin HEAD:main

@@ -1,262 +1,71 @@
-src/app/[locale]/(home)/components/ActivityPostList.tsx(44,28): error TS2551: Property 'created' does not exist on type 'AggregateTopPost'. Did you mean 'createdAt'?
-src/app/[locale]/(home)/components/ActivityPostList.tsx(79,28): error TS2551: Property 'created' does not exist on type 'AggregateTopNote'. Did you mean 'createdAt'?
-src/app/[locale]/(home)/components/ActivityRecent.tsx(82,69): error TS2551: Property 'created' does not exist on type 'ReactActivityType'. Did you mean 'createdAt'?
-  Property 'created' does not exist on type '{ bizType: "comment"; } & RecentComment'.
-src/app/[locale]/(home)/components/HomePageTimeLine.tsx(106,27): error TS2345: Argument of type '(PostsItem | NotesItem)[]' is not assignable to parameter of type 'Post[]'.
-  Type 'PostsItem | NotesItem' is not assignable to type 'Post'.
-    Property 'created' is missing in type 'PostsItem' but required in type 'Post'.
-src/app/[locale]/(home)/components/HomePageTimeLine.tsx(246,43): error TS2322: Type 'unknown' is not assignable to type 'string | number'.
-src/app/[locale]/(home)/components/HomePageTimeLine.tsx(249,58): error TS2339: Property 'category' does not exist on type 'Post'.
-src/app/[locale]/(home)/components/HomePageTimeLine.tsx(250,54): error TS2339: Property 'slug' does not exist on type 'Post'.
-src/app/[locale]/(home)/page.tsx(52,30): error TS2551: Property 'created' does not exist on type 'AggregateTopNote | AggregateTopPost'. Did you mean 'createdAt'?
-  Property 'created' does not exist on type 'AggregateTopNote'.
-src/app/[locale]/(home)/page.tsx(52,62): error TS2551: Property 'created' does not exist on type 'AggregateTopNote | AggregateTopPost'. Did you mean 'createdAt'?
-  Property 'created' does not exist on type 'AggregateTopNote'.
-src/app/[locale]/(home)/page.tsx(71,34): error TS2551: Property 'created' does not exist on type 'AggregateTopNote | AggregateTopPost'. Did you mean 'createdAt'?
-  Property 'created' does not exist on type 'AggregateTopNote'.
-src/app/[locale]/(note-topic)/notes/(topic-detail)/series/[slug]/page.tsx(3,15): error TS2614: Module '"@mx-space/api-client"' has no exported member 'NoteTopicListItem'. Did you mean to use 'import NoteTopicListItem from "@mx-space/api-client"' instead?
-src/app/[locale]/(note-topic)/notes/(topic-detail)/series/[slug]/page.tsx(55,31): error TS2339: Property 'currentPage' does not exist on type 'Pager'.
-src/app/[locale]/(note-topic)/notes/series/page.tsx(12,57): error TS2339: Property 'data' does not exist on type 'TopicModel[] & ResponseWrapperType<unknown, { [key: string]: any; data: TopicModel[]; }, TopicModel[], ResponseMeta>'.
+src/app/[locale]/(note-topic)/notes/(topic-detail)/series/[slug]/page.tsx(42,20): error TS2347: Untyped function calls may not accept type arguments.
+src/app/[locale]/(note-topic)/notes/(topic-detail)/series/[slug]/page.tsx(71,28): error TS7006: Parameter 'child' implicitly has an 'any' type.
+src/app/[locale]/(note-topic)/notes/(topic-detail)/series/[slug]/page.tsx(71,35): error TS7006: Parameter 'i' implicitly has an 'any' type.
 src/app/[locale]/(note-topic)/notes/series/page.tsx(21,22): error TS7006: Parameter 'item' implicitly has an 'any' type.
 src/app/[locale]/(note-topic)/notes/series/page.tsx(21,28): error TS7006: Parameter 'i' implicitly has an 'any' type.
-src/app/[locale]/(page-detail)/[slug]/EquipmentPage.tsx(40,63): error TS2551: Property 'modified' does not exist on type 'PageModel'. Did you mean 'modifiedAt'?
-  Property 'modified' does not exist on type 'PageModelMarkdown'.
-src/app/[locale]/(page-detail)/[slug]/layout.tsx(115,65): error TS2339: Property 'allowComment' does not exist on type 'PageModelMarkdown | PageModelLexical'.
-  Property 'allowComment' does not exist on type 'PageModelMarkdown'.
-src/app/[locale]/(page-detail)/[slug]/pageExtra.tsx(75,52): error TS2339: Property 'pageMeta' does not exist on type 'AggregateRoot'.
-src/app/[locale]/(page-detail)/[slug]/pageExtra.tsx(77,41): error TS7006: Parameter 'i' implicitly has an 'any' type.
-src/app/[locale]/(page-detail)/[slug]/pageExtra.tsx(119,65): error TS2339: Property 'allowComment' does not exist on type 'PageModel'.
-  Property 'allowComment' does not exist on type 'PageModelMarkdown'.
-src/app/[locale]/friends/page.tsx(37,15): error TS2339: Property 'data' does not exist on type 'LinkModel[] & ResponseWrapperType<unknown, { [key: string]: any; data: LinkModel[]; }, LinkModel[], ResponseMeta>'.
-src/app/[locale]/friends/page.tsx(157,9): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
-  Type 'null' is not assignable to type 'string | undefined'.
-src/app/[locale]/notes/[id]/api.tsx(1,15): error TS2614: Module '"@mx-space/api-client"' has no exported member 'NoteWrappedWithLikedAndTranslationPayload'. Did you mean to use 'import NoteWrappedWithLikedAndTranslationPayload from "@mx-space/api-client"' instead?
-src/app/[locale]/notes/[id]/page.tsx(4,3): error TS2614: Module '"@mx-space/api-client"' has no exported member 'ModelWithLiked'. Did you mean to use 'import ModelWithLiked from "@mx-space/api-client"' instead?
-src/app/[locale]/notes/[id]/page.tsx(5,3): error TS2614: Module '"@mx-space/api-client"' has no exported member 'ModelWithTranslation'. Did you mean to use 'import ModelWithTranslation from "@mx-space/api-client"' instead?
-src/app/[locale]/notes/[id]/pageExtra.tsx(5,3): error TS2614: Module '"@mx-space/api-client"' has no exported member 'NoteWrappedWithLikedAndTranslationPayload'. Did you mean to use 'import NoteWrappedWithLikedAndTranslationPayload from "@mx-space/api-client"' instead?
-src/app/[locale]/notes/page.tsx(1,15): error TS2724: '"@mx-space/api-client"' has no exported member named 'NoteWrappedWithLikedPayload'. Did you mean 'NoteWrappedPayload'?
-src/app/[locale]/og/route.tsx(133,9): error TS2322: Type '{ title: string; subtitle: string; meta: any; images: Image[] | undefined; id: string; } | { title: string; subtitle: string; meta: Record<string, any> | null | undefined; images: Image[] | ... 1 more ... | undefined; id: string; }' is not assignable to type '{ title: string; subtitle: string; meta: any; images: Image[] | undefined; id: string; }'.
-  Type '{ title: string; subtitle: string; meta: Record<string, any> | null | undefined; images: Image[] | null | undefined; id: string; }' is not assignable to type '{ title: string; subtitle: string; meta: any; images: Image[] | undefined; id: string; }'.
-    Types of property 'images' are incompatible.
-      Type 'Image[] | null | undefined' is not assignable to type 'Image[] | undefined'.
-        Type 'null' is not assignable to type 'Image[] | undefined'.
-src/app/[locale]/og/route.tsx(150,22): error TS2339: Property 'data' does not exist on type 'NoteModel & { next?: Partial<NoteModel> | null | undefined; prev?: Partial<NoteModel> | null | undefined; } & ResponseWrapperType<unknown, { [key: string]: any; data: NoteWrappedPayload; }, NoteWrappedPayload, ResponseMeta>'.
-src/app/[locale]/og/route.tsx(152,21): error TS2339: Property 'data' does not exist on type 'NoteModel & { next?: Partial<NoteModel> | null | undefined; prev?: Partial<NoteModel> | null | undefined; } & ResponseWrapperType<unknown, { [key: string]: any; data: NoteWrappedPayload; }, NoteWrappedPayload, ResponseMeta>'.
-src/app/[locale]/og/route.tsx(153,23): error TS2339: Property 'data' does not exist on type 'NoteModel & { next?: Partial<NoteModel> | null | undefined; prev?: Partial<NoteModel> | null | undefined; } & ResponseWrapperType<unknown, { [key: string]: any; data: NoteWrappedPayload; }, NoteWrappedPayload, ResponseMeta>'.
-src/app/[locale]/og/route.tsx(154,19): error TS2339: Property 'data' does not exist on type 'NoteModel & { next?: Partial<NoteModel> | null | undefined; prev?: Partial<NoteModel> | null | undefined; } & ResponseWrapperType<unknown, { [key: string]: any; data: NoteWrappedPayload; }, NoteWrappedPayload, ResponseMeta>'.
-src/app/[locale]/og/route.tsx(160,9): error TS2322: Type '{ title: string; subtitle: string; meta: any; images: Image[] | undefined; id: string; } | { title: string; subtitle: string; meta: Record<string, any> | null | undefined; images: Image[] | ... 1 more ... | undefined; id: string; }' is not assignable to type '{ title: string; subtitle: string; meta: any; images: Image[] | undefined; id: string; }'.
-  Type '{ title: string; subtitle: string; meta: Record<string, any> | null | undefined; images: Image[] | null | undefined; id: string; }' is not assignable to type '{ title: string; subtitle: string; meta: any; images: Image[] | undefined; id: string; }'.
-    Types of property 'images' are incompatible.
-      Type 'Image[] | null | undefined' is not assignable to type 'Image[] | undefined'.
-        Type 'null' is not assignable to type 'Image[] | undefined'.
-src/app/[locale]/posts/(post-detail)/[category]/[slug]/api.tsx(2,3): error TS2614: Module '"@mx-space/api-client"' has no exported member 'ModelWithLiked'. Did you mean to use 'import ModelWithLiked from "@mx-space/api-client"' instead?
-src/app/[locale]/posts/(post-detail)/[category]/[slug]/api.tsx(3,3): error TS2614: Module '"@mx-space/api-client"' has no exported member 'ModelWithTranslation'. Did you mean to use 'import ModelWithTranslation from "@mx-space/api-client"' instead?
-src/app/[locale]/posts/loader.tsx(33,24): error TS2339: Property 'currentPage' does not exist on type 'Pager'.
-src/app/[locale]/posts/loader.tsx(43,40): error TS2339: Property 'currentPage' does not exist on type 'Pager'.
-src/app/[locale]/posts/loader.tsx(46,31): error TS2339: Property 'currentPage' does not exist on type 'Pager'.
-src/app/[locale]/preview/page.tsx(4,3): error TS2614: Module '"@mx-space/api-client"' has no exported member 'ModelWithLiked'. Did you mean to use 'import ModelWithLiked from "@mx-space/api-client"' instead?
-src/app/[locale]/preview/page.tsx(5,3): error TS2614: Module '"@mx-space/api-client"' has no exported member 'ModelWithTranslation'. Did you mean to use 'import ModelWithTranslation from "@mx-space/api-client"' instead?
-src/app/[locale]/preview/page.tsx(7,3): error TS2614: Module '"@mx-space/api-client"' has no exported member 'NoteWrappedWithLikedAndTranslationPayload'. Did you mean to use 'import NoteWrappedWithLikedAndTranslationPayload from "@mx-space/api-client"' instead?
-src/app/[locale]/preview/page.tsx(253,26): error TS2339: Property 'count' does not exist on type 'NoteModel'.
-src/app/[locale]/projects/page.tsx(22,19): error TS2339: Property 'data' does not exist on type 'ProjectModel[] & ResponseWrapperType<unknown, { [key: string]: any; data: ProjectModel[]; }, ProjectModel[], ResponseMeta>'.
-src/app/[locale]/says/feed/route.tsx(43,17): error TS2551: Property 'created' does not exist on type 'SayModel'. Did you mean 'createdAt'?
-src/app/[locale]/thinking/feed/route.tsx(38,28): error TS2339: Property 'data' does not exist on type 'RecentlyModel[] & ResponseWrapperType<unknown, { [key: string]: any; data: RecentlyModel[]; }, RecentlyModel[], ResponseMeta>'.
-src/app/[locale]/thinking/item.tsx(112,38): error TS2551: Property 'created' does not exist on type 'RecentlyModel'. Did you mean 'createdAt'?
-src/app/[locale]/thinking/item.tsx(113,19): error TS2551: Property 'modified' does not exist on type 'RecentlyModel'. Did you mean 'modifiedAt'?
-src/app/[locale]/thinking/item.tsx(121,59): error TS2551: Property 'modified' does not exist on type 'RecentlyModel'. Did you mean 'modifiedAt'?
-src/app/[locale]/thinking/page.tsx(121,15): error TS2339: Property 'data' does not exist on type 'RecentlyModel[] & ResponseWrapperType<unknown, { [key: string]: any; data: RecentlyModel[]; }, RecentlyModel[], ResponseMeta>'.
+src/app/[locale]/friends/page.tsx(375,17): error TS7006: Parameter 'err' implicitly has an 'any' type.
+src/app/[locale]/layout.tsx(73,27): error TS18048: 'url' is possibly 'undefined'.
+src/app/[locale]/layout.tsx(75,25): error TS18048: 'seo' is possibly 'undefined'.
+src/app/[locale]/layout.tsx(76,19): error TS18048: 'seo' is possibly 'undefined'.
+src/app/[locale]/layout.tsx(76,34): error TS18048: 'seo' is possibly 'undefined'.
+src/app/[locale]/layout.tsx(78,18): error TS18048: 'seo' is possibly 'undefined'.
+src/app/[locale]/layout.tsx(79,15): error TS18048: 'seo' is possibly 'undefined'.
+src/app/[locale]/layout.tsx(113,18): error TS18048: 'seo' is possibly 'undefined'.
+src/app/[locale]/layout.tsx(114,27): error TS18048: 'seo' is possibly 'undefined'.
+src/app/[locale]/layout.tsx(116,20): error TS18048: 'seo' is possibly 'undefined'.
+src/app/[locale]/layout.tsx(117,20): error TS18048: 'seo' is possibly 'undefined'.
+src/app/[locale]/layout.tsx(120,12): error TS18048: 'url' is possibly 'undefined'.
+src/app/[locale]/layout.tsx(122,17): error TS18048: 'url' is possibly 'undefined'.
+src/app/[locale]/layout.tsx(123,19): error TS18048: 'user' is possibly 'undefined'.
+src/app/[locale]/layout.tsx(127,20): error TS18048: 'user' is possibly 'undefined'.
+src/app/[locale]/layout.tsx(127,47): error TS18048: 'user' is possibly 'undefined'.
+src/app/[locale]/layout.tsx(129,14): error TS18048: 'seo' is possibly 'undefined'.
+src/app/[locale]/layout.tsx(130,20): error TS18048: 'seo' is possibly 'undefined'.
+src/app/[locale]/layout.tsx(134,18): error TS18048: 'url' is possibly 'undefined'.
+src/app/[locale]/layout.tsx(243,21): error TS2322: Type '{ pageMeta: any; theme: AppThemeConfig; user?: UserModel | undefined; seo?: SeoOptionModel | undefined; url?: Url | undefined; categories?: CategoryModel[] | undefined; latestNoteId?: { ...; } | undefined; ai?: AggregateAIConfig; }' is not assignable to type 'AggregateRoot'.
+  Types of property 'user' are incompatible.
+    Type 'UserModel | undefined' is not assignable to type 'UserModel'.
+      Type 'undefined' is not assignable to type 'UserModel'.
+src/app/[locale]/notes/page.tsx(12,13): error TS2347: Untyped function calls may not accept type arguments.
+src/app/[locale]/posts/(post-detail)/[category]/page.tsx(15,36): error TS2339: Property 'path' does not exist on type '{}'.
+src/app/[locale]/posts/(post-detail)/[category]/page.tsx(19,36): error TS2339: Property 'path' does not exist on type '{}'.
+src/app/[locale]/posts/loader.tsx(61,26): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/app/[locale]/posts/loader.tsx(61,32): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/app/[locale]/posts/page.tsx(75,22): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/app/[locale]/posts/page.tsx(75,28): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/app/[locale]/thinking/item.tsx(46,16): error TS7031: Binding element 'code' implicitly has an 'any' type.
+src/app/[locale]/thinking/item.tsx(58,16): error TS7031: Binding element 'code' implicitly has an 'any' type.
+src/app/[locale]/thinking/page.tsx(65,16): error TS7006: Parameter 'res' implicitly has an 'any' type.
 src/app/[locale]/thinking/page.tsx(167,19): error TS7006: Parameter 'item' implicitly has an 'any' type.
-src/app/[locale]/timeline/layout.tsx(46,30): error TS2339: Property 'data' does not exist on type 'TimelineData & ResponseWrapperType<unknown, { [key: string]: any; data: TimelineData; }, TimelineData, ResponseMeta>'.
-src/app/[locale]/timeline/page.tsx(108,28): error TS2339: Property 'data' does not exist on type 'TimelineData & ResponseWrapperType<unknown, { [key: string]: any; data: TimelineData; }, TimelineData, ResponseMeta>'.
-src/app/[locale]/timeline/page.tsx(129,34): error TS2551: Property 'created' does not exist on type 'Pick<PostModel, "slug" | "title" | "id" | "createdAt" | "category" | "modifiedAt"> & { url: string; }'. Did you mean 'createdAt'?
-src/app/[locale]/timeline/page.tsx(150,34): error TS2551: Property 'created' does not exist on type 'Pick<NoteModel, "title" | "id" | "createdAt" | "nid" | "mood" | "weather" | "bookmark" | "modifiedAt">'. Did you mean 'createdAt'?
-src/components/layout/header/internal/HeaderDataConfigureProvider.tsx(32,42): error TS2339: Property 'pageMeta' does not exist on type 'AggregateRoot'.
-src/components/modules/comment/Comment.tsx(81,35): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string | undefined'.
-  Type 'null' is not assignable to type 'string | undefined'.
-src/components/modules/comment/Comment.tsx(90,5): error TS2339: Property 'source' does not exist on type 'CommentThreadViewItem'.
-src/components/modules/comment/Comment.tsx(132,16): error TS2339: Property 'mode' does not exist on type 'never'.
-  Property 'mode' does not exist on type 'never'.
-src/components/modules/comment/Comment.tsx(134,19): error TS2339: Property 'quote' does not exist on type 'never'.
-  Property 'quote' does not exist on type 'never'.
-src/components/modules/comment/Comment.tsx(137,16): error TS2339: Property 'mode' does not exist on type 'never'.
-  Property 'mode' does not exist on type 'never'.
-src/components/modules/comment/Comment.tsx(141,31): error TS2339: Property 'snapshotText' does not exist on type 'never'.
-  Property 'snapshotText' does not exist on type 'never'.
-src/components/modules/comment/Comment.tsx(141,66): error TS2339: Property 'snapshotText' does not exist on type 'never'.
-  Property 'snapshotText' does not exist on type 'never'.
-src/components/modules/comment/Comment.tsx(187,40): error TS2322: Type 'string | null' is not assignable to type 'string | number | Date'.
-  Type 'null' is not assignable to type 'string | number | Date'.
-src/components/modules/comment/Comment.tsx(189,17): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
-  Type 'null' is not assignable to type 'string | undefined'.
-src/components/modules/comment/Comment.tsx(221,51): error TS2551: Property 'created' does not exist on type 'CommentThreadViewItem'. Did you mean 'createdAt'?
-src/components/modules/comment/Comment.tsx(310,13): error TS2322: Type 'CommentModel[]' is not assignable to type 'CommentWithAnchor[]'.
-  Type 'CommentModel' is not assignable to type 'CommentWithAnchor'.
-    Type 'CommentModel' is not assignable to type '{ anchor?: CommentAnchor | undefined; new?: boolean | undefined; }'.
-      Types of property 'anchor' are incompatible.
-        Type 'CommentAnchorModel | null' is not assignable to type 'CommentAnchor | undefined'.
-          Type 'null' is not assignable to type 'CommentAnchor | undefined'.
-src/components/modules/comment/CommentActionButtonGroup.tsx(43,39): error TS2551: Property 'created' does not exist on type 'CommentThreadViewItem'. Did you mean 'createdAt'?
-src/components/modules/comment/CommentAnchorHighlight.tsx(22,19): error TS2339: Property 'mode' does not exist on type 'never'.
-  Property 'mode' does not exist on type 'never'.
-src/components/modules/comment/CommentAnchorHighlight.tsx(36,17): error TS2339: Property 'mode' does not exist on type 'never'.
-  Property 'mode' does not exist on type 'never'.
-src/components/modules/comment/CommentAnchorHighlight.tsx(150,21): error TS2339: Property 'mode' does not exist on type 'never'.
-  Property 'mode' does not exist on type 'never'.
-src/components/modules/comment/CommentAnchorHighlight.tsx(150,62): error TS2339: Property 'lang' does not exist on type 'never'.
-  Property 'lang' does not exist on type 'never'.
-src/components/modules/comment/CommentBlockGutter.tsx(39,21): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
-  Type 'null' is not assignable to type 'string'.
-src/components/modules/comment/CommentBlockGutter.tsx(40,18): error TS2345: Argument of type 'string | null' is not assignable to parameter of type 'string'.
-  Type 'null' is not assignable to type 'string'.
-src/components/modules/comment/CommentBlockGutter.tsx(41,23): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
-  Type 'null' is not assignable to type 'string | undefined'.
-src/components/modules/comment/CommentBlockGutter.tsx(41,41): error TS2322: Type 'string | null' is not assignable to type 'string'.
-  Type 'null' is not assignable to type 'string'.
-src/components/modules/comment/CommentBlockGutter.tsx(186,20): error TS2339: Property 'blockId' does not exist on type 'never'.
-  Property 'blockId' does not exist on type 'never'.
-src/components/modules/comment/CommentBlockGutter.tsx(188,30): error TS2339: Property 'mode' does not exist on type 'never'.
-  Property 'mode' does not exist on type 'never'.
-src/components/modules/comment/CommentBlockGutter.tsx(191,36): error TS2339: Property 'blockId' does not exist on type 'never'.
-  Property 'blockId' does not exist on type 'never'.
-src/components/modules/comment/CommentBlockGutter.tsx(193,24): error TS2339: Property 'blockId' does not exist on type 'never'.
-  Property 'blockId' does not exist on type 'never'.
-src/components/modules/comment/CommentBlockGutter.tsx(194,25): error TS2339: Property 'mode' does not exist on type 'never'.
-  Property 'mode' does not exist on type 'never'.
-src/components/modules/comment/CommentBlockThread.tsx(30,9): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
-  Type 'null' is not assignable to type 'string | undefined'.
-src/components/modules/comment/CommentBlockThread.tsx(34,9): error TS2322: Type 'string | null' is not assignable to type 'string | undefined'.
-  Type 'null' is not assignable to type 'string | undefined'.
-src/components/modules/comment/CommentBlockThread.tsx(42,41): error TS2551: Property 'created' does not exist on type 'CommentWithAnchor'. Did you mean 'createdAt'?
-src/components/modules/comment/CommentBlockThread.tsx(45,26): error TS2339: Property 'mode' does not exist on type 'never'.
-  Property 'mode' does not exist on type 'never'.
-src/components/modules/comment/CommentBlockThread.tsx(47,29): error TS2339: Property 'quote' does not exist on type 'never'.
-  Property 'quote' does not exist on type 'never'.
-src/components/modules/comment/CommentBox/hooks.tsx(154,9): error TS2353: Object literal may only specify known properties, and 'source' does not exist in type 'CommentDto & { anchor?: CommentAnchor | undefined; }'.
-src/components/modules/comment/CommentBox/hooks.tsx(160,27): error TS2339: Property 'avatar' does not exist on type 'CommentDto & { anchor?: CommentAnchor | undefined; }'.
-  Property 'avatar' does not exist on type 'ReaderCommentDto & { anchor?: CommentAnchor | undefined; }'.
-src/components/modules/comment/CommentBox/hooks.tsx(183,14): error TS2339: Property 'reply' does not exist on type 'CommentController<unknown>'.
-src/components/modules/comment/CommentBox/hooks.tsx(218,10): error TS2339: Property 'comment' does not exist on type 'CommentController<unknown>'.
-src/components/modules/comment/CommentProvider.tsx(105,19): error TS2345: Argument of type 'InfiniteData<PaginateResult<CommentThreadItem> & { readers: Record<string, ReaderModel>; }, unknown>' is not assignable to parameter of type 'InfiniteData<PaginateResult<CommentModel & { ref: string; }> & { readers: Record<string, ReaderModel>; }, unknown>'.
-  Type 'PaginateResult<CommentThreadItem> & { readers: Record<string, ReaderModel>; }' is not assignable to type 'PaginateResult<CommentModel & { ref: string; }> & { readers: Record<string, ReaderModel>; }'.
-    Type 'PaginateResult<CommentThreadItem> & { readers: Record<string, ReaderModel>; }' is not assignable to type 'PaginateResult<CommentModel & { ref: string; }>'.
-      Types of property 'data' are incompatible.
-        Type 'CommentThreadItem[]' is not assignable to type '(CommentModel & { ref: string; })[]'.
-          Type 'CommentThreadItem' is not assignable to type 'CommentModel & { ref: string; }'.
-            Type 'CommentThreadItem' is not assignable to type '{ ref: string; }'.
-              Types of property 'ref' are incompatible.
-                Type 'CommentRefSummary | null | undefined' is not assignable to type 'string'.
-                  Type 'undefined' is not assignable to type 'string'.
-src/components/modules/comment/CommentProvider.tsx(150,36): error TS2345: Argument of type '(prev: Record<string, CommentThreadViewItem>) => { [x: string]: CommentThreadViewItem | { editedAt: string; id: string; createdAt: string; ... 27 more ...; replyWindow?: CommentReplyWindow | undefined; }; }' is not assignable to parameter of type 'SetStateAction<Record<string, CommentThreadViewItem>>'.
-  Type '(prev: Record<string, CommentThreadViewItem>) => { [x: string]: CommentThreadViewItem | { editedAt: string; id: string; createdAt: string; ... 27 more ...; replyWindow?: CommentReplyWindow | undefined; }; }' is not assignable to type '(prev: Record<string, CommentThreadViewItem>) => Record<string, CommentThreadViewItem>'.
-    Type '{ [x: string]: CommentThreadViewItem | { editedAt: string; id: string; createdAt: string; refType: CollectionRefTypes; ... 26 more ...; replyWindow?: CommentReplyWindow; }; }' is not assignable to type 'Record<string, CommentThreadViewItem>'.
-      'string' index signatures are incompatible.
-        Type 'CommentThreadViewItem | { editedAt: string; id: string; createdAt: string; refType: CollectionRefTypes; refId: string; state: number; author: string | null; ... 23 more ...; replyWindow?: CommentReplyWindow | undefined; }' is not assignable to type 'CommentThreadViewItem'.
-          Type '{ editedAt: string; id: string; createdAt: string; refType: CollectionRefTypes; refId: string; state: number; author: string | null; text: string; ... 22 more ...; replyWindow?: CommentReplyWindow; }' is not assignable to type 'CommentThreadViewItem'.
-            Type '{ editedAt: string; id: string; createdAt: string; refType: CollectionRefTypes; refId: string; state: number; author: string | null; text: string; ... 22 more ...; replyWindow?: CommentReplyWindow; }' is not assignable to type '{ anchor?: CommentAnchor | undefined; new?: boolean | undefined; }'.
-              Types of property 'anchor' are incompatible.
-                Type 'CommentAnchorModel | null' is not assignable to type 'CommentAnchor | undefined'.
-                  Type 'null' is not assignable to type 'CommentAnchor | undefined'.
-src/components/modules/comment/hooks.tsx(26,31): error TS2339: Property 'currentPage' does not exist on type 'Pager'.
-src/components/modules/comment/hooks.tsx(28,63): error TS2339: Property 'currentPage' does not exist on type 'Pager'.
-src/components/modules/comment/thread.test.ts(20,3): error TS2322: Type 'string' is not assignable to type 'CommentRefSummary'.
-src/components/modules/comment/thread.test.ts(75,7): error TS2322: Type 'string' is not assignable to type 'CommentRefSummary & string'.
-  Type 'string' is not assignable to type 'CommentRefSummary'.
-src/components/modules/comment/thread.test.ts(102,13): error TS2353: Object literal may only specify known properties, and 'currentPage' does not exist in type 'Pager'.
-src/components/modules/comment/thread.test.ts(115,46): error TS2345: Argument of type '{ pageParams: number[]; pages: { data: (CommentThreadItem & { ref: string; })[]; pagination: { currentPage: number; totalPage: number; hasPrevPage: false; hasNextPage: false; size: number; total: number; }; }[]; }' is not assignable to parameter of type 'CommentThreadInfiniteData'.
-  Types of property 'pages' are incompatible.
-    Type '{ data: (CommentThreadItem & { ref: string; })[]; pagination: { currentPage: number; totalPage: number; hasPrevPage: false; hasNextPage: false; size: number; total: number; }; }[]' is not assignable to type '(CommentThreadPage & { readers?: Record<string, ReaderModel> | undefined; })[]'.
-      Type '{ data: (CommentThreadItem & { ref: string; })[]; pagination: { currentPage: number; totalPage: number; hasPrevPage: false; hasNextPage: false; size: number; total: number; }; }' is not assignable to type 'CommentThreadPage & { readers?: Record<string, ReaderModel> | undefined; }'.
-        Type '{ data: (CommentThreadItem & { ref: string; })[]; pagination: { currentPage: number; totalPage: number; hasPrevPage: false; hasNextPage: false; size: number; total: number; }; }' is not assignable to type 'CommentThreadPage'.
-          Types of property 'pagination' are incompatible.
-            Type '{ currentPage: number; totalPage: number; hasPrevPage: false; hasNextPage: false; size: number; total: number; }' is missing the following properties from type 'Pager': page, totalPages
-src/components/modules/comment/thread.ts(35,25): error TS2344: Type '"created"' does not satisfy the constraint 'keyof CommentModel'.
-src/components/modules/comment/thread.ts(36,25): error TS2344: Type '"created"' does not satisfy the constraint 'keyof CommentModel'.
-src/components/modules/comment/thread.ts(37,18): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
-src/components/modules/comment/thread.ts(37,43): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
-src/components/modules/comment/thread.ts(55,25): error TS2345: Argument of type '(a: Pick<CommentModel, "created">, b: Pick<CommentModel, "created">) => number' is not assignable to parameter of type '(a: CommentThreadViewItem, b: CommentThreadViewItem) => number'.
-  Types of parameters 'a' and 'a' are incompatible.
-    Property 'created' is missing in type 'CommentThreadViewItem' but required in type 'Pick<CommentModel, "created">'.
-src/components/modules/comment/thread.ts(64,38): error TS2345: Argument of type 'CommentThreadItem | (CommentModel & { anchor?: CommentAnchor | undefined; new?: boolean | undefined; } & { children: CommentThreadViewItem[]; replies?: CommentWithAnchor[] | undefined; replyWindow?: CommentReplyWindow | undefined; } & { ...; })' is not assignable to parameter of type 'CommentWithAnchor'.
-  Type 'CommentThreadItem' is not assignable to type 'CommentWithAnchor'.
-    Type 'CommentThreadItem' is not assignable to type '{ anchor?: CommentAnchor | undefined; new?: boolean | undefined; }'.
-      Types of property 'anchor' are incompatible.
-        Type 'CommentAnchorModel | null' is not assignable to type 'CommentAnchor | undefined'.
-          Type 'null' is not assignable to type 'CommentAnchor | undefined'.
-src/components/modules/comment/thread.ts(66,23): error TS2345: Argument of type 'CommentModel' is not assignable to parameter of type 'CommentWithAnchor'.
-  Type 'CommentModel' is not assignable to type '{ anchor?: CommentAnchor | undefined; new?: boolean | undefined; }'.
-    Types of property 'anchor' are incompatible.
-      Type 'CommentAnchorModel | null' is not assignable to type 'CommentAnchor | undefined'.
-        Type 'null' is not assignable to type 'CommentAnchor | undefined'.
-src/components/modules/comment/thread.ts(74,39): error TS2345: Argument of type '(a: Pick<CommentModel, "created">, b: Pick<CommentModel, "created">) => number' is not assignable to parameter of type '(a: CommentThreadViewItem, b: CommentThreadViewItem) => number'.
-  Types of parameters 'a' and 'a' are incompatible.
-    Property 'created' is missing in type 'CommentThreadViewItem' but required in type 'Pick<CommentModel, "created">'.
-src/components/modules/comment/thread.ts(84,5): error TS2322: Type 'CommentModel[]' is not assignable to type 'CommentWithAnchor[]'.
-  Type 'CommentModel' is not assignable to type 'CommentWithAnchor'.
-    Type 'CommentModel' is not assignable to type '{ anchor?: CommentAnchor | undefined; new?: boolean | undefined; }'.
-      Types of property 'anchor' are incompatible.
-        Type 'CommentAnchorModel | null' is not assignable to type 'CommentAnchor | undefined'.
-          Type 'null' is not assignable to type 'CommentAnchor | undefined'.
-src/components/modules/comment/thread.ts(96,17): error TS2345: Argument of type 'CommentThreadItem | (CommentModel & { anchor?: CommentAnchor | undefined; new?: boolean | undefined; } & { children: CommentThreadViewItem[]; replies?: CommentWithAnchor[] | undefined; replyWindow?: CommentReplyWindow | undefined; } & { ...; })' is not assignable to parameter of type 'CommentWithAnchor'.
-  Type 'CommentThreadItem' is not assignable to type 'CommentWithAnchor'.
-    Type 'CommentThreadItem' is not assignable to type '{ anchor?: CommentAnchor | undefined; new?: boolean | undefined; }'.
-      Types of property 'anchor' are incompatible.
-        Type 'CommentAnchorModel | null' is not assignable to type 'CommentAnchor | undefined'.
-          Type 'null' is not assignable to type 'CommentAnchor | undefined'.
-src/components/modules/comment/thread.ts(98,19): error TS2345: Argument of type 'CommentModel | CommentWithAnchor' is not assignable to parameter of type 'CommentWithAnchor'.
-  Type 'CommentModel' is not assignable to type 'CommentWithAnchor'.
-    Type 'CommentModel' is not assignable to type '{ anchor?: CommentAnchor | undefined; new?: boolean | undefined; }'.
-      Types of property 'anchor' are incompatible.
-        Type 'CommentAnchorModel | null' is not assignable to type 'CommentAnchor | undefined'.
-          Type 'null' is not assignable to type 'CommentAnchor | undefined'.
-src/components/modules/comment/thread.ts(140,17): error TS2345: Argument of type '(a: Pick<CommentModel, "created">, b: Pick<CommentModel, "created">) => number' is not assignable to parameter of type '(a: CommentModel, b: CommentModel) => number'.
-  Types of parameters 'a' and 'a' are incompatible.
-    Property 'created' is missing in type 'CommentModel' but required in type 'Pick<CommentModel, "created">'.
-src/components/modules/note/NoteHeadCover.tsx(67,31): error TS7006: Parameter 'i' implicitly has an 'any' type.
-src/components/modules/note/NoteTopicDetail.tsx(4,3): error TS2614: Module '"@mx-space/api-client"' has no exported member 'NoteTopicListItem'. Did you mean to use 'import NoteTopicListItem from "@mx-space/api-client"' instead?
-src/components/modules/note/NoteTopicDetail.tsx(70,10): error TS2745: This JSX tag's 'children' prop expects type 'string' which requires multiple children, but only a single child was provided.
-src/components/modules/note/NoteTopicInfo.tsx(3,15): error TS2614: Module '"@mx-space/api-client"' has no exported member 'NoteTopicListItem'. Did you mean to use 'import NoteTopicListItem from "@mx-space/api-client"' instead?
-src/components/modules/page/PageActionAside.tsx(21,27): error TS2339: Property 'allowComment' does not exist on type 'PageModel'.
-  Property 'allowComment' does not exist on type 'PageModelMarkdown'.
-src/components/modules/peek/NotePreview.tsx(1,15): error TS2614: Module '"@mx-space/api-client"' has no exported member 'NoteWrappedWithLikedAndTranslationPayload'. Did you mean to use 'import NoteWrappedWithLikedAndTranslationPayload from "@mx-space/api-client"' instead?
-src/components/modules/post/PostItem.tsx(1,15): error TS2614: Module '"@mx-space/api-client"' has no exported member 'PostListItem'. Did you mean to use 'import PostListItem from "@mx-space/api-client"' instead?
-src/components/modules/post/PostItemComposer.tsx(5,15): error TS2614: Module '"@mx-space/api-client"' has no exported member 'PostListItem'. Did you mean to use 'import PostListItem from "@mx-space/api-client"' instead?
-src/components/modules/post/PostMetaBar.tsx(20,21): error TS2344: Type '"category" | "count" | "created" | "tags" | "modified"' does not satisfy the constraint '"meta" | "text" | "slug" | "summary" | "title" | "id" | "createdAt" | "content" | "images" | "category" | "categoryId" | "copyright" | "tags" | "pinOrder" | "related" | "modifiedAt" | ... 6 more ... | "isPremium"'.
-  Type '"count"' is not assignable to type '"meta" | "text" | "slug" | "summary" | "title" | "id" | "createdAt" | "content" | "images" | "category" | "categoryId" | "copyright" | "tags" | "pinOrder" | "related" | "modifiedAt" | ... 6 more ... | "isPremium"'.
-src/components/modules/post/PostMetaBar.tsx(37,29): error TS2322: Type '{}' is not assignable to type 'string | Date'.
-src/components/modules/post/PostMetaBar.tsx(50,33): error TS2322: Type '{}' is not assignable to type 'string | Date'.
-src/components/modules/post/PostMetaBar.tsx(97,22): error TS2339: Property 'read' does not exist on type '{}'.
-src/components/modules/post/PostMetaBar.tsx(101,49): error TS2339: Property 'read' does not exist on type '{}'.
-src/components/modules/post/PostMetaBar.tsx(105,22): error TS2339: Property 'like' does not exist on type '{}'.
-src/components/modules/post/PostMetaBar.tsx(109,49): error TS2339: Property 'like' does not exist on type '{}'.
-src/components/modules/post/PostPagination.tsx(13,45): error TS2339: Property 'currentPage' does not exist on type 'Pager'.
-src/components/modules/post/PostPagination.tsx(22,45): error TS2339: Property 'currentPage' does not exist on type 'Pager'.
-src/components/modules/post/PostRelated.tsx(30,23): error TS7006: Parameter 'post' implicitly has an 'any' type.
-src/components/modules/post/fab/PostTagsFAB.tsx(38,66): error TS2339: Property 'data' does not exist on type 'TagModel[] & ResponseWrapperType<unknown, { [key: string]: any; data: TagModel[]; }, TagModel[], ResponseMeta>'.
+src/app/[locale]/timeline/layout.tsx(46,18): error TS7006: Parameter 'res' implicitly has an 'any' type.
+src/app/[locale]/timeline/page.tsx(108,16): error TS7006: Parameter 'res' implicitly has an 'any' type.
+src/app/feed/route.tsx(38,5): error TS2347: Untyped function calls may not accept type arguments.
+src/app/feed/route.tsx(39,5): error TS2347: Untyped function calls may not accept type arguments.
+src/app/feed/route.tsx(89,17): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/app/feed/route.tsx(118,51): error TS7006: Parameter 'image' implicitly has an 'any' type.
+src/atoms/url.ts(20,7): error TS2347: Untyped function calls may not accept type arguments.
+src/components/layout/footer/GatewayInfo.tsx(131,35): error TS7006: Parameter 'note' implicitly has an 'any' type.
+src/components/layout/footer/GatewayInfo.tsx(140,35): error TS7006: Parameter 'post' implicitly has an 'any' type.
+src/components/layout/footer/GatewayInfo.tsx(150,35): error TS7006: Parameter 'page' implicitly has an 'any' type.
+src/components/layout/header/internal/OwnerStatus.tsx(32,20): error TS2347: Untyped function calls may not accept type arguments.
+src/components/modules/comment/CommentBox/hooks.tsx(195,24): error TS7006: Parameter 'res' implicitly has an 'any' type.
+src/components/modules/comment/LexicalCommentWrapper.tsx(33,26): error TS2347: Untyped function calls may not accept type arguments.
+src/components/modules/note/NoteTimeline.tsx(50,26): error TS2347: Untyped function calls may not accept type arguments.
+src/components/modules/note/NoteTimeline.tsx(77,46): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/components/modules/note/NoteTopicDetail.tsx(35,7): error TS2347: Untyped function calls may not accept type arguments.
+src/components/modules/note/NoteTopicInfo.tsx(55,7): error TS2347: Untyped function calls may not accept type arguments.
+src/components/modules/note/NoteTopicInfo.tsx(71,26): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/components/modules/note/NoteTopicInfo.tsx(84,33): error TS7006: Parameter 'item' implicitly has an 'any' type.
 src/components/modules/post/fab/PostTagsFAB.tsx(67,18): error TS7006: Parameter 'tag' implicitly has an 'any' type.
-src/components/modules/post/fab/PostTagsFAB.tsx(112,24): error TS2551: Property 'created' does not exist on type 'TagDetailPost'. Did you mean 'createdAt'?
-src/components/modules/post/fab/PostTagsFAB.tsx(112,56): error TS2551: Property 'created' does not exist on type 'TagDetailPost'. Did you mean 'createdAt'?
-src/components/modules/post/fab/PostTagsFAB.tsx(126,41): error TS2551: Property 'created' does not exist on type 'TagDetailPost'. Did you mean 'createdAt'?
-src/components/modules/say/SayMasonry.tsx(122,37): error TS2551: Property 'created' does not exist on type 'SayModel'. Did you mean 'createdAt'?
-src/components/modules/say/SayModalForm.tsx(64,9): error TS2322: Type 'string | null | undefined' is not assignable to type 'string | number | readonly string[] | undefined'.
-  Type 'null' is not assignable to type 'string | number | readonly string[] | undefined'.
-src/components/modules/say/SayModalForm.tsx(69,9): error TS2322: Type 'string | null | undefined' is not assignable to type 'string | number | readonly string[] | undefined'.
-  Type 'null' is not assignable to type 'string | number | readonly string[] | undefined'.
-src/components/modules/say/hooks.ts(23,31): error TS2339: Property 'currentPage' does not exist on type 'Pager'.
-src/components/ui/image/ZoomedImage.tsx(466,19): error TS2339: Property 'blurHash' does not exist on type 'Image'.
-src/components/ui/image/ZoomedImage.tsx(473,27): error TS2339: Property 'blurHash' does not exist on type 'Image'.
-src/components/ui/link-card/plugins/self/mx-space.tsx(63,7): error TS2322: Type '(PostModelMarkdown & ResponseWrapperType<unknown, { [key: string]: any; data: PostModel; }, PostModelMarkdown, PostResponseMeta>) | (PostModelLexical & ResponseWrapperType<...>)' is not assignable to type '{ title: string; text?: string | undefined; images?: { src: string; }[] | undefined; meta?: Record<string, any> | null | undefined; cover?: string | undefined; summary?: string | null | undefined; }'.
-  Type 'PostModelMarkdown & ResponseWrapperType<unknown, { [key: string]: any; data: PostModel; }, PostModelMarkdown, PostResponseMeta>' is not assignable to type '{ title: string; text?: string | undefined; images?: { src: string; }[] | undefined; meta?: Record<string, any> | null | undefined; cover?: string | undefined; summary?: string | null | undefined; }'.
-    Types of property 'images' are incompatible.
-      Type 'Image[] | null | undefined' is not assignable to type '{ src: string; }[] | undefined'.
-        Type 'null' is not assignable to type '{ src: string; }[] | undefined'.
-src/components/ui/link-card/plugins/self/mx-space.tsx(67,23): error TS2339: Property 'data' does not exist on type 'NoteWrappedPayload'.
-src/components/ui/markdown/renderers/image.tsx(93,34): error TS2339: Property 'blurHash' does not exist on type 'Image | {}'.
-src/providers/note/CurrentNoteDataProvider.tsx(3,15): error TS2614: Module '"@mx-space/api-client"' has no exported member 'NoteWrappedWithLikedAndTranslationPayload'. Did you mean to use 'import NoteWrappedWithLikedAndTranslationPayload from "@mx-space/api-client"' instead?
-src/providers/post/CurrentPostDataProvider.tsx(4,3): error TS2614: Module '"@mx-space/api-client"' has no exported member 'ModelWithLiked'. Did you mean to use 'import ModelWithLiked from "@mx-space/api-client"' instead?
-src/providers/post/CurrentPostDataProvider.tsx(5,3): error TS2614: Module '"@mx-space/api-client"' has no exported member 'ModelWithTranslation'. Did you mean to use 'import ModelWithTranslation from "@mx-space/api-client"' instead?
-src/queries/definition/note.ts(1,15): error TS2614: Module '"@mx-space/api-client"' has no exported member 'NoteWrappedWithLikedAndTranslationPayload'. Did you mean to use 'import NoteWrappedWithLikedAndTranslationPayload from "@mx-space/api-client"' instead?
-src/queries/definition/post.ts(2,3): error TS2614: Module '"@mx-space/api-client"' has no exported member 'ModelWithLiked'. Did you mean to use 'import ModelWithLiked from "@mx-space/api-client"' instead?
-src/queries/definition/post.ts(3,3): error TS2614: Module '"@mx-space/api-client"' has no exported member 'ModelWithTranslation'. Did you mean to use 'import ModelWithTranslation from "@mx-space/api-client"' instead?
+src/components/modules/post/fab/PostTagsFAB.tsx(111,12): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/components/modules/post/fab/PostTagsFAB.tsx(111,15): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/components/modules/post/fab/PostTagsFAB.tsx(114,15): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/components/modules/subscribe/SubscribeModal.tsx(139,41): error TS2339: Property 'allowTypes' does not exist on type '{}'.
+src/lib/upload.ts(13,10): error TS2347: Untyped function calls may not accept type arguments.
+src/providers/root/auth-session-provider.ts(18,7): error TS2347: Untyped function calls may not accept type arguments.
+src/queries/hooks/authjs.tsx(20,7): error TS2347: Untyped function calls may not accept type arguments.
+src/queries/hooks/authjs.tsx(24,16): error TS7006: Parameter 'res' implicitly has an 'any' type.
+src/queries/hooks/authjs.tsx(60,27): error TS7006: Parameter 'provider' implicitly has an 'any' type.
 undefined
 /home/runner/work/Shiro/Shiro/apps/web:
  ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL  Command failed with exit code 2: tsc --noEmit

@@ -5,7 +5,7 @@ ENV PATH=$PNPM_HOME:$PATH
 
 RUN corepack enable \
   && corepack prepare pnpm@10.27.0 --activate \
-  && npm install -g --arch=x64 --platform=linux sharp
+  && npm install -g sharp
 
 FROM base AS deps
 

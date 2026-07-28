@@ -1,3 +1,6 @@
+import legacyCreateClient, {
+  allControllers as legacyControllers,
+} from '@mx-space/api-client'
 import type { IRequestAdapter } from '@mx-space/api-client-v5'
 import { allControllers } from '@mx-space/api-client-v5'
 import { createLegacyApiClient } from '@mx-space/api-client-v5/legacy'
@@ -56,6 +59,20 @@ export const createFetchAdapter = (
   },
 })
 
+// This factory is used only to preserve Shiro's original v2 controller types.
+// The exported client below is a v5 instance at runtime.
+const createLegacyTypedClient = (
+  fetchAdapter: ReturnType<typeof createFetchAdapter>,
+) =>
+  legacyCreateClient(fetchAdapter as any)(API_URL, {
+    controllers: legacyControllers,
+    getDataFromResponse(response) {
+      return response as any
+    },
+  })
+
+type ShiroApiClient = ReturnType<typeof createLegacyTypedClient>
+
 const normalizeLegacyFields = (value: any): any => {
   if (Array.isArray(value)) return value.map(normalizeLegacyFields)
   if (!value || typeof value !== 'object') return value
@@ -82,8 +99,8 @@ const normalizeLegacyFields = (value: any): any => {
       like: next.likeCount ?? 0,
     }
   }
-  // Core 13 removed the per-document switch. Global comment settings
-  // remain authoritative, while legacy Shiro expects this flag.
+  // Core 13 removed the per-document switch. Global comment settings remain
+  // authoritative, while legacy Shiro expects this field on content models.
   if (
     next.allowComment === undefined &&
     typeof next.id === 'string' &&
@@ -103,8 +120,8 @@ const shiroCompatibilityAdapter = {
 
 export const createApiClient = (
   fetchAdapter: ReturnType<typeof createFetchAdapter>,
-) =>
+): ShiroApiClient =>
   createLegacyApiClient(fetchAdapter)(API_URL, {
     controllers: allControllers,
     responseAdapter: shiroCompatibilityAdapter,
-  }) as any
+  }) as unknown as ShiroApiClient

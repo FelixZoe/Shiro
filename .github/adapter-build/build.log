@@ -1,21 +1,12 @@
 
-> @shiro/web@6.6.7 prebuild /home/runner/work/Shiro/Shiro/apps/web
-> rimraf .next || exit 0
+> @shiro/web@6.6.7 build:ci /home/runner/work/Shiro/Shiro/apps/web
+> tsc --noEmit && cross-env NODE_ENV=production NODE_OPTIONS=--max_old_space_size=4096 NEXT_TELEMETRY_DISABLED=1 CI=true next build
 
-
-> @shiro/web@6.6.7 build /home/runner/work/Shiro/Shiro/apps/web
-> tsc --noEmit && cross-env NODE_ENV=production NODE_OPTIONS=--max_old_space_size=4096 next build
-
-[dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: 📡 add observability to secrets: https://dotenvx.com/ops
 ⚠ Invalid next.config.mjs options detected: 
 ⚠     Unrecognized key(s) in object: 'turbopackImportTypeText' at "experimental"
 ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
 ⚠ No build cache found. Please configure build caching for faster rebuilds. Read more: https://nextjs.org/docs/messages/no-cache
-Attention: Next.js now collects completely anonymous telemetry regarding usage.
-This information is used to shape Next.js' roadmap and prioritize features.
-You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
-https://nextjs.org/telemetry
-
 ▲ Next.js 16.1.6 (Turbopack)
 - Experiments (use with caution):
   ✓ globalNotFound
@@ -23,7 +14,7 @@ https://nextjs.org/telemetry
   ✓ webpackBuildWorker
 
   Creating an optimized production build ...
-[dotenv@17.2.3] injecting env (0) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+[dotenv@17.2.3] injecting env (0) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
 Found 2 warnings while optimizing generated CSS:
 
 Issue #1:
@@ -89,5 +80,5 @@ Import trace:
 
     at ignore-listed frames
 /home/runner/work/Shiro/Shiro/apps/web:
- ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @shiro/web@6.6.7 build: `tsc --noEmit && cross-env NODE_ENV=production NODE_OPTIONS=--max_old_space_size=4096 next build`
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @shiro/web@6.6.7 build:ci: `tsc --noEmit && cross-env NODE_ENV=production NODE_OPTIONS=--max_old_space_size=4096 NEXT_TELEMETRY_DISABLED=1 CI=true next build`
 Exit status 1

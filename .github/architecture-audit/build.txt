@@ -1,0 +1,99 @@
+
+> @shiro/web@6.6.7 build:ci /home/runner/work/Shiro/Shiro/apps/web
+> tsc --noEmit && cross-env NODE_ENV=production NODE_OPTIONS=--max_old_space_size=4096 NEXT_TELEMETRY_DISABLED=1 CI=true next build --webpack
+
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  override existing env vars with { override: true }
+⚠ Invalid next.config.mjs options detected: 
+⚠     Unrecognized key(s) in object: 'turbopackImportTypeText' at "experimental"
+⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+⚠ No build cache found. Please configure build caching for faster rebuilds. Read more: https://nextjs.org/docs/messages/no-cache
+▲ Next.js 16.1.6 (webpack)
+- Experiments (use with caution):
+  ✓ globalNotFound
+  ✓ webpackBuildWorker
+
+  Creating an optimized production build ...
+[dotenv@17.2.3] injecting env (0) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /home/runner/work/Shiro/Shiro/node_modules/.pnpm/next-intl@4.8.3_@swc+helpers@0.5.19_next@16.1.6_@babel+core@7.29.0_react-dom@19.2.4_rea_5984d0f1d35b0dedda61fdc7c185e7b2/node_modules/next-intl/dist/esm/production/extractor/format/index.js for build dependencies failed at 'import(t)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+[dotenv@17.2.3] injecting env (0) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /home/runner/work/Shiro/Shiro/node_modules/.pnpm/next-intl@4.8.3_@swc+helpers@0.5.19_next@16.1.6_@babel+core@7.29.0_react-dom@19.2.4_rea_5984d0f1d35b0dedda61fdc7c185e7b2/node_modules/next-intl/dist/esm/production/extractor/format/index.js for build dependencies failed at 'import(t)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+[dotenv@17.2.3] injecting env (0) from .env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
+Found 2 warnings while optimizing generated CSS:
+
+Issue #1:
+│   color: inherit;
+│ }
+│ ::highlight(rich-editor-text-selection) {
+┆             ^-- 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?
+┆
+│   background-color: var(--rc-accent-light);
+│   color: inherit;
+
+Issue #2:
+│   color: inherit;
+│ }
+│ ::highlight(rich-editor-text-selection-inactive) {
+┆             ^-- 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?
+┆
+│   background-color: var(--rc-text-tertiary);
+│   @supports (color: color-mix(in lab, red, red)) {
+
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /home/runner/work/Shiro/Shiro/node_modules/.pnpm/next-intl@4.8.3_@swc+helpers@0.5.19_next@16.1.6_@babel+core@7.29.0_react-dom@19.2.4_rea_5984d0f1d35b0dedda61fdc7c185e7b2/node_modules/next-intl/dist/esm/production/extractor/format/index.js for build dependencies failed at 'import(t)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+✓ Compiled successfully in 98s
+  Skipping validation of types
+  Collecting page data using 3 workers ...
+⚠ Using edge runtime on a page currently disables static generation for that page
+  Generating static pages using 3 workers (0/44) ...
+  Generating static pages using 3 workers (11/44) 
+  Generating static pages using 3 workers (22/44) 
+  Generating static pages using 3 workers (33/44) 
+✓ Generating static pages using 3 workers (44/44) in 211.8ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ƒ /_not-found
+├ ƒ /[locale]
+├ ƒ /[locale]/[slug]
+├ ƒ /[locale]/common/deleted
+├ ƒ /[locale]/friends
+├ ƒ /[locale]/markdown
+├ ƒ /[locale]/notes
+├ ƒ /[locale]/notes/[id]
+├ ƒ /[locale]/notes/series
+├ ƒ /[locale]/notes/series/[slug]
+├ ƒ /[locale]/og
+├ ƒ /[locale]/posts
+├ ƒ /[locale]/posts/[category]
+├ ƒ /[locale]/posts/[category]/[slug]
+├ ƒ /[locale]/preview
+├ ƒ /[locale]/projects
+├ ƒ /[locale]/projects/[id]
+├ ƒ /[locale]/says
+├ ƒ /[locale]/says/feed
+├ ƒ /[locale]/sitemap
+├ ƒ /[locale]/thinking
+├ ƒ /[locale]/thinking/[id]
+├ ƒ /[locale]/thinking/feed
+├ ƒ /[locale]/timeline
+├ ƒ /api/bangumi/[...all]
+├ ƒ /api/bilibili/check_live
+├ ƒ /api/gh/[...all]
+├ ƒ /api/leetcode
+├ ƒ /api/music/netease
+├ ƒ /api/music/tencent
+├ ƒ /api/tmdb/[...all]
+├ ƒ /api/webhook
+├ ƒ /feed
+├ ƒ /home-og
+└ ○ /robots.txt
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

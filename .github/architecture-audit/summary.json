@@ -1,0 +1,8 @@
+{
+  "validationPass": 2,
+  "compose": 0,
+  "dockerfile": 0,
+  "typecheck": 0,
+  "build": 0,
+  "legacyHitCount": 1
+}

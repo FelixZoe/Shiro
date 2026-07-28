@@ -15,7 +15,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     env:
-      VALIDATION_PASS: '4'
+      VALIDATION_PASS: '5'
       CI: 'true'
       NEXT_TELEMETRY_DISABLED: '1'
     steps:
@@ -40,8 +40,8 @@ jobs:
         run: |
           set +e
           mkdir -p .github/adapter-build
-          pnpm --filter @shiro/web exec tsc --noEmit 2>&1 | tee .github/adapter-build/typecheck.log
-          status=${PIPESTATUS[0]}
+          pnpm --filter @shiro/web exec tsc --noEmit > .github/adapter-build/typecheck.log 2>&1
+          status=$?
           printf '%s\n' "$status" > .github/adapter-build/typecheck.status
           exit 0
 
@@ -49,9 +49,20 @@ jobs:
         shell: bash
         run: |
           set +e
-          pnpm --filter @shiro/web run build:ci 2>&1 | tee .github/adapter-build/build.log
-          status=${PIPESTATUS[0]}
-          printf '%s\n' "$status" > .github/adapter-build/build.status
+          mkdir -p .github/adapter-build
+          {
+            echo "VALIDATION_PASS=$VALIDATION_PASS"
+            echo "NODE=$(node --version)"
+            echo "PNPM=$(pnpm --version)"
+            echo "PWD=$(pwd)"
+            echo "START_BUILD"
+            pnpm --filter @shiro/web run build:ci
+            status=$?
+            echo "BUILD_EXIT_STATUS=$status"
+          } > .github/adapter-build/build-pass5.log 2>&1
+          printf '%s\n' "$status" > .github/adapter-build/build-pass5.status
+          cp .github/adapter-build/build-pass5.log .github/adapter-build/build.log
+          cp .github/adapter-build/build-pass5.status .github/adapter-build/build.status
           exit 0
 
       - name: Commit reports

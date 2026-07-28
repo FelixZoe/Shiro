@@ -64,8 +64,8 @@ function getLocaleFromRequest(req: NextRequest, pathname: string): string {
 function getLocaleFromIntlResponseHeaders(
   headers: Headers,
 ): string | undefined {
-  // next-intl sets locale as a request header override, which Next.js serializes
-  // to response headers using `x-middleware-request-*`.
+  // next-intl serializes request header overrides as
+  // `x-middleware-request-*` response headers.
   return (
     normalizeLocale(
       headers.get(
@@ -146,20 +146,15 @@ export async function proxy(req: NextRequest) {
     }
 
     const intlResponse = intlMiddleware(req)
-
-    // Copy headers from intl response
-    if (intlResponse.headers) {
-      intlResponse.headers.forEach((value, key) => {
-        requestHeaders.set(key, value)
-      })
-    }
-
-    // Persist resolved locale for server-side fetching (e.g. as `x-lang`)
-    requestHeaders.set(
-      REQUEST_LOCALE,
+    const resolvedLocale =
       getLocaleFromIntlResponseHeaders(intlResponse.headers) ||
-        getLocaleFromRequest(req, pathname),
-    )
+      getLocaleFromRequest(req, pathname)
+
+    // Do not copy `x-middleware-rewrite`, `location` or other middleware
+    // response headers into the request. Doing that makes the internally
+    // rewritten default-locale route redirect back to `/` forever.
+    requestHeaders.set(REQUEST_LOCALE, resolvedLocale)
+    requestHeaders.set(NEXT_INTL_LOCALE_HEADER, resolvedLocale)
 
     // Handle redirects
     if (
@@ -189,7 +184,9 @@ export async function proxy(req: NextRequest) {
   }
 
   // Routes that skip next-intl still benefit from having a stable locale header.
-  requestHeaders.set(REQUEST_LOCALE, getLocaleFromRequest(req, pathname))
+  const resolvedLocale = getLocaleFromRequest(req, pathname)
+  requestHeaders.set(REQUEST_LOCALE, resolvedLocale)
+  requestHeaders.set(NEXT_INTL_LOCALE_HEADER, resolvedLocale)
 
   return NextResponse.next({
     request: {

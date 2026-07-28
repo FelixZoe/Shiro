@@ -169,7 +169,7 @@ services:
         - CMD
         - curl
         - -fsS
-        - http://127.0.0.1:2323/
+        - http://127.0.0.1:2323/api/health
       timeout: 10s
       interval: 30s
       retries: 5

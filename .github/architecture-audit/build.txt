@@ -2,7 +2,7 @@
 > @shiro/web@6.6.7 build:ci /home/runner/work/Shiro/Shiro/apps/web
 > tsc --noEmit && cross-env NODE_ENV=production NODE_OPTIONS=--max_old_space_size=4096 NEXT_TELEMETRY_DISABLED=1 CI=true next build --webpack
 
-[dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  override existing env vars with { override: true }
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
 ⚠ Invalid next.config.mjs options detected: 
 ⚠     Unrecognized key(s) in object: 'turbopackImportTypeText' at "experimental"
 ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
@@ -16,10 +16,10 @@
 [dotenv@17.2.3] injecting env (0) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
 <w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /home/runner/work/Shiro/Shiro/node_modules/.pnpm/next-intl@4.8.3_@swc+helpers@0.5.19_next@16.1.6_@babel+core@7.29.0_react-dom@19.2.4_rea_5984d0f1d35b0dedda61fdc7c185e7b2/node_modules/next-intl/dist/esm/production/extractor/format/index.js for build dependencies failed at 'import(t)'.
 <w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
-[dotenv@17.2.3] injecting env (0) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.2.3] injecting env (0) from .env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
 <w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /home/runner/work/Shiro/Shiro/node_modules/.pnpm/next-intl@4.8.3_@swc+helpers@0.5.19_next@16.1.6_@babel+core@7.29.0_react-dom@19.2.4_rea_5984d0f1d35b0dedda61fdc7c185e7b2/node_modules/next-intl/dist/esm/production/extractor/format/index.js for build dependencies failed at 'import(t)'.
 <w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
-[dotenv@17.2.3] injecting env (0) from .env -- tip: 🔑 add access controls to secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
 Found 2 warnings while optimizing generated CSS:
 
 Issue #1:
@@ -42,7 +42,7 @@ Issue #2:
 
 <w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /home/runner/work/Shiro/Shiro/node_modules/.pnpm/next-intl@4.8.3_@swc+helpers@0.5.19_next@16.1.6_@babel+core@7.29.0_react-dom@19.2.4_rea_5984d0f1d35b0dedda61fdc7c185e7b2/node_modules/next-intl/dist/esm/production/extractor/format/index.js for build dependencies failed at 'import(t)'.
 <w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
-✓ Compiled successfully in 98s
+✓ Compiled successfully in 102s
   Skipping validation of types
   Collecting page data using 3 workers ...
 ⚠ Using edge runtime on a page currently disables static generation for that page
@@ -50,7 +50,7 @@ Issue #2:
   Generating static pages using 3 workers (11/44) 
   Generating static pages using 3 workers (22/44) 
   Generating static pages using 3 workers (33/44) 
-✓ Generating static pages using 3 workers (44/44) in 211.8ms
+✓ Generating static pages using 3 workers (44/44) in 271.9ms
   Finalizing page optimization ...
   Collecting build traces ...
 
@@ -82,6 +82,7 @@ Route (app)
 ├ ƒ /api/bangumi/[...all]
 ├ ƒ /api/bilibili/check_live
 ├ ƒ /api/gh/[...all]
+├ ƒ /api/health
 ├ ƒ /api/leetcode
 ├ ƒ /api/music/netease
 ├ ƒ /api/music/tencent

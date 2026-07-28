@@ -1,8 +1,9 @@
 {
-  "validationPass": 2,
+  "validationPass": 4,
   "compose": 0,
   "dockerfile": 0,
   "typecheck": 0,
   "build": 0,
-  "legacyHitCount": 1
+  "legacyHitCount": 1,
+  "apiCallLineCount": 113
 }

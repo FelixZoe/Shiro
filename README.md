@@ -91,7 +91,7 @@ docker compose logs -f core shiro
 1. PostgreSQL 与 Redis 健康检查通过。
 2. `mx-migrate` 执行 Drizzle schema migration 和 Core 应用数据迁移，然后以状态码 0 退出。
 3. Core 启动并通过 `/api/v3/ping` 健康检查。
-4. Shiro 启动。
+4. Shiro 启动并通过 `/api/health` 健康检查。
 
 `mx-migrate` 显示 `Exited (0)` 是正常状态，不是服务崩溃。
 
@@ -124,16 +124,89 @@ docker compose up -d
 ## 从旧 MongoDB 部署迁移
 
 > [!WARNING]
-> 新 Compose 不会自动把旧 MongoDB 数据变成 PostgreSQL 数据。不要把旧 MongoDB volume 挂到 PostgreSQL 容器，也不要删除旧数据后直接尝试启动。
+> 这是一次硬切换。普通 `mx-migrate` 只升级 PostgreSQL schema，不能把 MongoDB 数据转换为 PostgreSQL。必须使用 Core 官方 `@mx-space/mongo-pg-cli`。
 
-迁移前应：
+### 1. 冻结写入并备份
 
-1. 完整备份旧 MongoDB 数据和旧 `.mx-space` 文件目录。
-2. 按当前 Core 提供的迁移/导入流程转换业务数据。
-3. 在测试目录启动 PostgreSQL 版本并核对文章、页面、评论、用户和附件。
-4. 确认无误后再切换域名和生产流量。
+只停止旧 Core 应用，保持旧 MongoDB 在线：
 
-当前 Compose 中的 `migrate.mjs` 用于 PostgreSQL schema 与新版本应用数据升级，不等同于 MongoDB → PostgreSQL 的跨数据库转换。
+```bash
+docker compose stop app
+```
+
+备份 MongoDB 和旧文件目录：
+
+```bash
+docker exec -i $(docker ps -q -f name=mongo) \
+  mongodump --archive --gzip > backup-mongo-$(date +%Y%m%d).archive.gz
+
+tar czf backup-mx-space-$(date +%Y%m%d).tar.gz ./data/mx-space
+```
+
+不要先删除旧 MongoDB 容器或 volume。迁移工具只读 MongoDB，不会修改源数据。
+
+### 2. 只启动 PostgreSQL 和 Redis
+
+```bash
+docker compose up -d postgres redis
+docker compose ps
+```
+
+### 3. 配置旧 MongoDB 地址
+
+旧 MongoDB 已映射到宿主机 27017 时，在 `.env` 中填写：
+
+```env
+MONGO_URI=mongodb://host.docker.internal:27017/mx-space
+MIGRATION_MODE=dry-run
+MIGRATION_SNOWFLAKE_WORKER_ID=900
+```
+
+旧 MongoDB 仍是一个 Docker 容器时，可以把它接入当前网络，再使用容器名：
+
+```bash
+docker network connect shiro-core_mx-space mongo
+```
+
+```env
+MONGO_URI=mongodb://mongo:27017/mx-space
+```
+
+实际网络名可用 `docker network ls` 查看。
+
+### 4. 先 dry-run
+
+```bash
+docker compose --profile mongo-migration run --rm mongo-to-postgres
+```
+
+重点检查输出：
+
+- `Rows allocated` 与旧站文章、评论等数量大致一致。
+- `Missing refs` 没有异常的大量缺失。
+- 最后没有致命错误。
+
+### 5. 再 apply
+
+确认 dry-run 正常后：
+
+```bash
+MIGRATION_MODE=apply \
+  docker compose --profile mongo-migration run --rm mongo-to-postgres
+```
+
+`apply` 是幂等的，可以在中断后重跑；`mongo_id_map` 会保证同一条 MongoDB 数据继续使用相同的 Snowflake ID。
+
+### 6. 启动并核对
+
+```bash
+docker compose up -d --build
+docker compose ps
+docker compose logs mx-migrate
+docker compose logs -f core shiro
+```
+
+上线前逐项核对：文章、页面、评论、用户、订阅、附件、图片、搜索、RSS 和站点地图。确认无误后再切换域名；在稳定观察期结束前保留旧 MongoDB 备份和容器。
 
 ## 只部署 Shiro
 

@@ -1,12 +1,145 @@
-version: '3'
+name: shiro-core
+
+# Core's migration command boots the complete Nest application context, so it
+# must receive the same database, Redis and security settings as the API server.
+x-core-env: &core-env
+  TZ: ${TZ:-Asia/Shanghai}
+  NODE_ENV: production
+  REDIS_HOST: redis
+  REDIS_PORT: "6379"
+  PG_HOST: postgres
+  PG_PORT: "5432"
+  PG_USER: ${POSTGRES_USER:-mx}
+  PG_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+  PG_DATABASE: ${POSTGRES_DB:-mx_core}
+  SNOWFLAKE_WORKER_ID: ${SNOWFLAKE_WORKER_ID:-1}
+  ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-localhost,127.0.0.1}
+  JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+  ENCRYPT_KEY: ${ENCRYPT_KEY:?Set a 64-character hex ENCRYPT_KEY in .env}
+  ENCRYPT_ENABLE: ${ENCRYPT_ENABLE:-false}
+  CDN_CACHE_HEADER: ${CDN_CACHE_HEADER:-true}
+  FORCE_CACHE_HEADER: ${FORCE_CACHE_HEADER:-false}
 
 services:
   shiro:
     container_name: shiro
-    image: innei/shiro:latest
-    volumes:
-      - ./.env:/app/apps/web/.env
-      - ./public:/app/apps/web/public
-    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://core:2333/api/v3
+        NEXT_PUBLIC_CLIENT_API_URL: ${PUBLIC_CORE_API_URL:-http://localhost:2333/api/v3}
+        NEXT_PUBLIC_GATEWAY_URL: ${PUBLIC_CORE_ORIGIN:-http://localhost:2333}
+    image: felixzoe/shiro:core-v3
+    environment:
+      NODE_ENV: production
+      PORT: "2323"
+      # SSR uses Docker DNS; browsers cannot resolve the `core` service name.
+      NEXT_PUBLIC_API_URL: http://core:2333/api/v3
+      NEXT_PUBLIC_CLIENT_API_URL: ${PUBLIC_CORE_API_URL:-http://localhost:2333/api/v3}
+      NEXT_PUBLIC_GATEWAY_URL: ${PUBLIC_CORE_ORIGIN:-http://localhost:2333}
+      TMDB_API_KEY: ${TMDB_API_KEY:-}
+      GH_TOKEN: ${GH_TOKEN:-}
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET:-}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-}
     ports:
-      - 2323:2323
+      - "${SHIRO_PORT:-2323}:2323"
+    depends_on:
+      core:
+        condition: service_healthy
+    networks:
+      - mx-space
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:2323/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  core:
+    container_name: mx-server
+    image: innei/mx-server:latest
+    pull_policy: always
+    environment: *core-env
+    volumes:
+      - ./data/mx-space:/root/.mx-space
+    ports:
+      - "${CORE_PORT:-2333}:2333"
+    depends_on:
+      mx-migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    networks:
+      - mx-space
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:2333/api/v3/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # Release-phase migration runner: Drizzle schema migrations first, followed
+  # by Core's application-data migrations. It exits after a successful upgrade.
+  mx-migrate:
+    container_name: mx-migrate
+    image: innei/mx-server:latest
+    pull_policy: always
+    command: ["node", "migrate.mjs"]
+    environment: *core-env
+    volumes:
+      - ./data/mx-space:/root/.mx-space
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - mx-space
+    restart: "no"
+
+  postgres:
+    container_name: mx-postgres
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-mx}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-mx_core}
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-mx} -d ${POSTGRES_DB:-mx_core}",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - mx-space
+    restart: unless-stopped
+
+  redis:
+    container_name: mx-redis
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - ./data/redis:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - mx-space
+    restart: unless-stopped
+
+networks:
+  mx-space:
+    driver: bridge

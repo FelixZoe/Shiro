@@ -26,23 +26,16 @@ jobs:
             -not -path './.git/*' \
             -not -path './node_modules/*' \
             -not -path './.next/*' \
+            -not -path './.github/architecture-audit/*' \
             | sed 's#^./##' | sort > .github/architecture-audit/tree.txt
 
-          : > .github/architecture-audit/deployment.txt
-          while IFS= read -r file; do
-            case "$file" in
-              *docker*|*Docker*|*compose*|*.env*|*.example|*.yaml|*.yml|*.json|*.md|*.mjs|*.cjs|*.ts|*.tsx)
-                case "$file" in
-                  pnpm-lock.yaml|*.snap|*.map) continue ;;
-                esac
-                if grep -Eiq 'mongo|postgres|redis|database|docker|compose|NEXT_PUBLIC_API_URL|CLIENT_API_URL|GATEWAY_URL|API_URL|/api/v[0-9]|upload|storage|mx-space|2333' "$file" 2>/dev/null; then
-                  printf '\n===== FILE: %s =====\n' "$file" >> .github/architecture-audit/deployment.txt
-                  cat "$file" >> .github/architecture-audit/deployment.txt
-                  printf '\n' >> .github/architecture-audit/deployment.txt
-                fi
-                ;;
-            esac
-          done < .github/architecture-audit/tree.txt
+          grep -RInE \
+            --exclude-dir=.git \
+            --exclude-dir=node_modules \
+            --exclude-dir=.next \
+            --exclude-dir=architecture-audit \
+            '(/api/v2|mongo(db)?|MONGO_|node:20|node:lts|NEXT_PUBLIC_API_URL|NEXT_PUBLIC_CLIENT_API_URL|NEXT_PUBLIC_GATEWAY_URL|docker-compose)' \
+            . > .github/architecture-audit/legacy-hits.txt || true
       - name: Commit audit
         shell: bash
         run: |
@@ -50,5 +43,5 @@ jobs:
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add .github/architecture-audit
           git diff --cached --quiet && exit 0
-          git commit -m 'chore: record deployment architecture audit'
+          git commit -m 'chore: record legacy deployment references'
           git push
